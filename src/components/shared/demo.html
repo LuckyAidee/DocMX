@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Órdenes - Completamente Plano</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white">
+  
+  <div class="p-8 max-w-7xl mx-auto">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-black text-gray-800 mb-2">
+        Historial de Órdenes
+      </h1>
+      <p class="text-sm text-gray-600">
+        Gestiona y descarga tus documentos solicitados
+      </p>
+    </div>
+
+    <!-- Filtros COMPLETAMENTE PLANOS - sin fondo -->
+    <div class="flex gap-3 mb-8">
+      <button class="px-5 py-2.5 rounded-xl font-semibold text-sm bg-teal-600 text-white transition-all duration-300">
+        Todas
+      </button>
+      <button class="px-5 py-2.5 rounded-xl font-semibold text-sm text-gray-700 hover:text-teal-600 transition-all duration-300">
+        En Proceso
+      </button>
+      <button class="px-5 py-2.5 rounded-xl font-semibold text-sm text-gray-700 hover:text-teal-600 transition-all duration-300">
+        Completado
+      </button>
+      <button class="px-5 py-2.5 rounded-xl font-semibold text-sm text-gray-700 hover:text-teal-600 transition-all duration-300">
+        Cancelado
+      </button>
+    </div>
+
+    <!-- Tabla COMPLETAMENTE PLANA - sin fondo blanco -->
+    <div class="border border-gray-300 rounded-2xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          
+          <!-- Header plano sin gradiente -->
+          <thead class="bg-gray-50 border-b border-gray-300">
+            <tr>
+              <th class="py-4 px-6 text-left text-sm font-bold text-gray-700">ID Orden</th>
+              <th class="py-4 px-6 text-left text-sm font-bold text-gray-700">Servicio</th>
+              <th class="py-4 px-6 text-left text-sm font-bold text-gray-700">Fecha</th>
+              <th class="py-4 px-6 text-left text-sm font-bold text-gray-700">Estado</th>
+              <th class="py-4 px-6 text-left text-sm font-bold text-gray-700">Precio</th>
+              <th class="py-4 px-6 text-left text-sm font-bold text-gray-700">Acción</th>
+            </tr>
+          </thead>
+
+          <!-- Body -->
+          <tbody class="bg-white">
+            
+            <!-- Orden Completada -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-all duration-200">
+              <td class="py-4 px-6 text-sm font-bold text-gray-800">#0001</td>
+              <td class="py-4 px-6 text-sm font-medium text-gray-700">Acta de Nacimiento</td>
+              <td class="py-4 px-6 text-sm text-gray-600">25/10/2025</td>
+              <td class="py-4 px-6">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-50 text-green-700 border border-green-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  Completado
+                </span>
+              </td>
+              <td class="py-4 px-6 text-sm font-bold text-gray-800">$15.00</td>
+              <td class="py-4 px-6">
+                <!-- Botón plano -->
+                <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Descargar
+                </button>
+              </td>
+            </tr>
+
+            <!-- Orden En Proceso -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-all duration-200">
+              <td class="py-4 px-6 text-sm font-bold text-gray-800">#0002</td>
+              <td class="py-4 px-6 text-sm font-medium text-gray-700">RFC</td>
+              <td class="py-4 px-6 text-sm text-gray-600">28/10/2025</td>
+              <td class="py-4 px-6">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  En Proceso
+                </span>
+              </td>
+              <td class="py-4 px-6 text-sm font-bold text-gray-800">$200.00</td>
+              <td class="py-4 px-6">
+                <!-- Botón disabled -->
+                <button disabled class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Descargar
+                </button>
+              </td>
+            </tr>
+
+            <!-- Orden Completada -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-all duration-200">
+              <td class="py-4 px-6 text-sm font-bold text-gray-800">#0004</td>
+              <td class="py-4 px-6 text-sm font-medium text-gray-700">Acta de Matrimonio</td>
+              <td class="py-4 px-6 text-sm text-gray-600">30/10/2025</td>
+              <td class="py-4 px-6">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-50 text-green-700 border border-green-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  Completado
+                </span>
+              </td>
+              <td class="py-4 px-6 text-sm font-bold text-gray-800">$15.00</td>
+              <td class="py-4 px-6">
+                <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Descargar
+                </button>
+              </td>
+            </tr>
+
+            <!-- Orden Cancelada -->
+            <tr class="hover:bg-gray-50 transition-all duration-200">
+              <td class="py-4 px-6 text-sm font-bold text-gray-800">#0006</td>
+              <td class="py-4 px-6 text-sm font-medium text-gray-700">CSF con RFC</td>
+              <td class="py-4 px-6 text-sm text-gray-600">30/10/2025</td>
+              <td class="py-4 px-6">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                  </svg>
+                  Cancelado
+                </span>
+              </td>
+              <td class="py-4 px-6 text-sm font-bold text-gray-800">$250.00</td>
+              <td class="py-4 px-6">
+                <button disabled class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Descargar
+                </button>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="mt-6 flex items-center gap-2 text-sm text-gray-600">
+      <div class="w-2 h-2 bg-teal-500 rounded-full"></div>
+      <span>
+        Mostrando <span class="font-bold text-gray-800">4</span> órdenes
+      </span>
+    </div>
+
+  </div>
+
+  <!-- Descripción de cambios -->
+  <div class="fixed bottom-6 left-6 right-6 bg-teal-50 border-2 border-teal-300 rounded-xl p-6 max-w-4xl mx-auto">
+    <h3 class="text-xl font-bold text-teal-800 mb-4">✅ Diseño COMPLETAMENTE PLANO</h3>
+    
+    <div class="grid grid-cols-2 gap-6 text-sm text-teal-700">
+      <div>
+        <h4 class="font-bold mb-2">Eliminado (capas sobrepuestas):</h4>
+        <ul class="space-y-1">
+          <li>❌ Fondo blanco en tabla (bg-white)</li>
+          <li>❌ Border grueso (border-2)</li>
+          <li>❌ Gradiente en header (from-gray-50 to-gray-100)</li>
+          <li>❌ Fondo gris en filtros inactivos (bg-gray-100)</li>
+          <li>❌ Border en filtros inactivos</li>
+          <li>❌ Cualquier efecto de profundidad</li>
+        </ul>
+      </div>
+      
+      <div>
+        <h4 class="font-bold mb-2">Resultado (todo al mismo nivel):</h4>
+        <ul class="space-y-1">
+          <li>✅ Filtros sin fondo (texto plano)</li>
+          <li>✅ Tabla con border simple</li>
+          <li>✅ Header sin gradiente (bg-gray-50 plano)</li>
+          <li>✅ Todo en el mismo plano visual</li>
+          <li>✅ Como en tu imagen de referencia</li>
+          <li>✅ Sin sensación de "cards"</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="mt-4 p-4 bg-teal-100 rounded-lg">
+      <p class="text-teal-800 font-semibold text-center">🎨 Todo completamente plano - sin fondos que parezcan sobrepuestos</p>
+    </div>
+  </div>
+
+</body>
+</html>
