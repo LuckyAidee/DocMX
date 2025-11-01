@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import Sidebar from '../layout/Sidebar';
-import TopBar from '../layout/TopBar';
-import SearchBar from '../layout/SearchBar';
-import CategoryNav from '../layout/CategoryNav';
-import AnnouncementBanner from './AnnouncementBanner';
-import MostUsedServices from './MostUsedServices';
+import Sidebar from '../components/layout/Sidebar';
+import TopBar from '../components/layout/TopBar';
+import SearchBar from '../components/layout/SearchBar';
+import CategoryNav from '../components/layout/CategoryNav';
+import AnnouncementBanner from '../components/dashboard/AnnouncementBanner';
+import MostUsedServices from '../components/dashboard/MostUsedServices';
 
 export default function Dashboard() {
   return (

@@ -38,7 +38,7 @@ export default function ActaNacimientoDetail() {
 
   const handleContinue = () => {
     setShowSuccessModal(false);
-    navigate('/dashboard/orders');
+    navigate('/orders');
   };
 
   return (
