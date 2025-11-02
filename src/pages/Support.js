@@ -22,11 +22,6 @@ export default function Support() {
       respuesta:
         'Verifica que los datos estén bien escritos y si están bien escritos y no aparece es que no está en el sistema, si algún otro servicio sí te lo otorga es que el documento es falso.',
     },
-    {
-      pregunta: '¿El saldo caduca?',
-      respuesta:
-        'No, tu saldo nunca expira y puedes usarlo cuando lo necesites.',
-    },
   ];
 
   const toggleFaq = (idx) => {

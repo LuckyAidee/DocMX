@@ -7,7 +7,7 @@ export default function CategoryNav() {
 
   const categories = [
     { label: 'ACTAS', path: '/actas' },
-    { label: 'CSF', path: '/csf' },
+    { label: 'RFC', path: '/rfc' },
     { label: 'CURP', path: '/curp' },
     { label: 'CORRECCIONES', path: '/correcciones' },
     { label: 'EXTRANJEROS', path: '/extranjeros' },
