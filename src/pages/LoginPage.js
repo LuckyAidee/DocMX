@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { apiService } from '../../services/api';
+import { apiService } from '../services/api';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
