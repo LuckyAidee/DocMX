@@ -12,9 +12,9 @@ export default function Sidebar() {
 
   const menuItems = [
     { icon: Home, label: 'Inicio', path: '/dashboard' },
-    { icon: FileText, label: 'Historial de órdenes', path: '/orders' },
-    { icon: CreditCard, label: 'Agregar Saldo', path: '/balance' },
-    { icon: HelpCircle, label: 'Soporte', path: '/support' },
+    { icon: FileText, label: 'Historial de órdenes', path: '/dashboard/orders' },
+    { icon: CreditCard, label: 'Agregar Saldo', path: '/dashboard/add-balance' },
+    { icon: HelpCircle, label: 'Soporte', path: '/dashboard/support' },
   ];
 
   const handleLogout = () => {
