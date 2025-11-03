@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { apiService } from '../services/api';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
-    nombre: '',
+    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    direccion: '',
+    phoneNumber: '',
+    address: '',
     aceptaTerminos: false
   });
 
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -26,55 +29,105 @@ export default function RegisterPage() {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+    if (errors.submit) {
+      setErrors(prev => ({ ...prev, submit: '' }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es obligatorio';
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Debe ingresar su Nombre Completo';
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'El correo es obligatorio';
+      newErrors.email = 'Debe ingresar su correo electrónico';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Ingresa un correo válido';
     }
 
     if (!formData.password) {
-      newErrors.password = 'La contraseña es obligatoria';
+      newErrors.password = 'Debe ingresar una contraseña';
     } else if (formData.password.length < 6) {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Debes confirmar tu contraseña';
+      newErrors.confirmPassword = 'Debes confirmar su contraseña';
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
-    if (!formData.direccion.trim()) {
-      newErrors.direccion = 'La dirección es obligatoria';
+    if(!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Debe ingresar un número telefónico';
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = 'Debe de ingresar una dirección válida';
     }
 
     if (!formData.aceptaTerminos) {
-      newErrors.aceptaTerminos = 'Debes aceptar los términos y condiciones';
+      newErrors.aceptaTerminos = 'Debe aceptar los términos y condiciones';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      console.log('Datos del registro:', formData);
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      console.log('Intentando registrar usuario...');
+      
+      // LLAMAR AL BACKEND PARA REGISTRO
+      const response = await apiService.register({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber,
+        address: formData.address
+      });
+
+      console.log('Registro exitoso:', response);
+      
+      // Mostrar mensaje de éxito y redirigir al login
       alert('¡Cuenta creada exitosamente!\n\nPuedes iniciar sesión ahora.');
       navigate('/');
+    } catch (error) {
+      console.error('❌ Error en registro:', error);
+      
+      let errorMessage = error.message || 'Error al crear la cuenta. Inténtalo de nuevo.';
+      const newErrors = {};
+
+      if (error.message.includes('email') && error.message.includes('teléfono')) {
+        errorMessage = 'Ya existe una cuenta con este email y número de teléfono';
+        newErrors.email = 'Este email ya está registrado';
+        newErrors.phoneNumber = 'Este teléfono ya está registrado';
+      } else if (error.message.includes('email')) {
+        errorMessage = 'Ya existe una cuenta con este email';
+        newErrors.email = 'Este email ya está registrado';
+      } else if (error.message.includes('teléfono')) {
+        errorMessage = 'Ya existe una cuenta con este número de teléfono';
+        newErrors.phoneNumber = 'Este teléfono ya está registrado';
+      } else if (error.message.includes('obligatorio')) {
+        errorMessage = 'Por favor completa todos los campos obligatorios';
+      }
+
+      newErrors.submit = errorMessage;
+      setErrors(newErrors);
+    } finally {
+      setIsLoading(false);
     }
   };
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -106,23 +159,23 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <form onSubmit={handleSubmit} className="space-y-5">
           
-          {/* Campo Nombre */}
+          {/* Campo Nombre Completo*/}
           <div>
             <input
               type="text"
-              id="nombre"
-              name="nombre"
-              value={formData.nombre}
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
               onChange={handleChange}
               placeholder="Nombre completo"
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                errors.nombre
+                errors.fullName
                   ? 'border-red-300 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-teal-500'
               }`}
             />
-            {errors.nombre && (
-              <p className="mt-1 text-xs text-red-600">{errors.nombre}</p>
+            {errors.fullName && (
+              <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>
             )}
           </div>
 
@@ -143,6 +196,26 @@ export default function RegisterPage() {
             />
             {errors.email && (
               <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+            )}
+          </div>
+
+          {/*Campo Número Telefónico*/}
+          <div>
+            <input
+              type="text"
+              id="phoneNumber"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              placeholder="Número de teléfono"
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition ${
+                errors.phoneNumber
+                  ? 'border-red-300 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-teal-500'
+              }`}
+            />
+            {errors.phoneNumber && (
+              <p className="mt-1 text-xs text-red-600">{errors.phoneNumber}</p>
             )}
           </div>
 
@@ -190,19 +263,19 @@ export default function RegisterPage() {
           <div>
             <input
               type="text"
-              id="direccion"
-              name="direccion"
-              value={formData.direccion}
-              onChange={handleChange}
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange} 
               placeholder="Dirección"
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                errors.direccion
+                errors.address
                   ? 'border-red-300 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-teal-500'
               }`}
             />
-            {errors.direccion && (
-              <p className="mt-1 text-xs text-red-600">{errors.direccion}</p>
+            {errors.address && (
+              <p className="mt-1 text-xs text-red-600">{errors.address}</p>
             )}
           </div>
 
@@ -229,9 +302,23 @@ export default function RegisterPage() {
             )}
           </div>
 
+          {/* MENSAJE DE ERROR GENERAL MEJORADO */}
+          {errors.submit && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="flex items-center">
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <strong>Error:</strong>
+              </div>
+              <p className="mt-1">{errors.submit}</p>
+            </div>
+          )}
+
           {/* Botón Crear Cuenta - EXACTO AL LOGIN */}
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2"
           >
             Crear Cuenta

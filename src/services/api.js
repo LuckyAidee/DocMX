@@ -50,6 +50,14 @@ class ApiService {
     });
   }
 
+  // Register endpoints
+  async register(userData) {
+    return this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
   // Documents endpoints
   async getDocuments() {
     return this.request('/documents');
