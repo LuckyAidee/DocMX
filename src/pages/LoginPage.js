@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,6 +11,17 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
+
+  React.useEffect(() => {
+    const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+    if (savedRememberMe) {
+      setRememberMe(true);
+      // Opcional: cargar email guardado si lo tienes
+      const savedEmail = localStorage.getItem('rememberedEmail');
+      if (savedEmail) setEmail(savedEmail);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,13 +33,18 @@ function LoginPage() {
       
       const data = await apiService.login({ email, password });
       
-      console.log('✅ Login exitoso, token recibido');
-      localStorage.setItem('access_token', data.access_token);
+      console.log('Login exitoso, token recibido');
       
-      // Redirigir al dashboard
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+      
+      await login(data.access_token, data.user, rememberMe);
       navigate('/dashboard');
     } catch (err) {
-      console.error('❌ Error de login:', err);
+      console.error('Error de login:', err);
       setError(err.message || 'Credenciales incorrectas. Por favor, verifica tus datos.');
     } finally {
       setIsLoading(false);

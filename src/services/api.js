@@ -7,7 +7,10 @@ class ApiService {
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
-    const token = localStorage.getItem('access_token');
+    const rememberMe = localStorage.getItem('rememberMe') === 'true';
+    const token = rememberMe 
+      ? localStorage.getItem('access_token')
+      : sessionStorage.getItem('access_token');
     
     const config = {
       headers: {
@@ -28,7 +31,8 @@ class ApiService {
         // Si es error 401 (Unauthorized), limpiar token
         if (response.status === 401) {
           localStorage.removeItem('access_token');
-          window.location.href = '/';
+          sessionStorage.removeItem('access_token');
+          localStorage.removeItem('rememberMe');
         }
         
         const errorData = await response.json().catch(() => ({}));

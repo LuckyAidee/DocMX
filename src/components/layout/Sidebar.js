@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, FileText, CreditCard, HelpCircle, LogOut, ChevronDown } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const menuItems = [
     { icon: Home, label: 'Inicio', path: '/dashboard' },
@@ -16,11 +18,24 @@ export default function Sidebar() {
   ];
 
   const handleLogout = () => {
-    console.log('Logging out...');
+    logout();
     navigate('/');
   };
 
   const isActive = (path) => location.pathname === path;
+
+  const getInitials = (name) => {
+    if (!name || typeof name !== 'string' || name.trim() === '') {
+      return 'UD';
+    }
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  const initials = getInitials(user?.fullName);
 
   return (
     <div
@@ -112,7 +127,7 @@ export default function Sidebar() {
           {/* Avatar mejorado */}
           <div className="relative flex-shrink-0">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center shadow-lg border-2 border-gray-600 group-hover:border-teal-500 transition-all duration-300">
-              <span className="text-sm font-bold text-gray-200">UD</span>
+              <span className="text-sm font-bold text-gray-200">{initials}</span>
             </div>
             {/* Indicador online */}
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-gray-900"></div>
@@ -121,8 +136,8 @@ export default function Sidebar() {
           {/* User Info */}
           {isExpanded && (
             <div className="flex-1 text-left overflow-hidden">
-              <p className="text-sm font-semibold truncate text-white">Usuario Demo</p>
-              <p className="text-xs text-gray-400 truncate">usuario@demo.com</p>
+              <p className="text-sm font-semibold truncate text-white">{user?.fullName || 'Usuario'}</p>
+              <p className="text-xs text-gray-400 truncate">{user?.email || 'usuario@email.com'}</p>
             </div>
           )}
 

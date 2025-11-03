@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // IMPORTS CORREGIDOS
 import LoginPage from './pages/LoginPage';
@@ -33,21 +35,61 @@ function AnimatedRoutes() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         
-        {/* Dashboard y utilidades */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/orders" element={<OrderHistory />} />
-        <Route path="/balance" element={<AddBalance />} />
-        <Route path="/support" element={<Support />} />
+        {/* Rutas protegidas del dashboard */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/orders" element={
+          <ProtectedRoute>
+            <OrderHistory />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/add-balance" element={
+          <ProtectedRoute>
+            <AddBalance />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/support" element={
+          <ProtectedRoute>
+            <Support />
+          </ProtectedRoute>
+        } />
         
         {/* Páginas de categorías */}
-        <Route path="/actas" element={<ActasPage />} />
-        <Route path="/rfc" element={<RFCPage />} />
-        <Route path="/curp" element={<CURPPage />} />
-        <Route path="/correcciones" element={<CorreccionesPage />} />
-        <Route path="/extranjeros" element={<ExtranjerosPage />} />
+        <Route path="/actas" element={
+          <ProtectedRoute>
+            <ActasPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/actas/acta-nacimiento" element={
+          <ProtectedRoute>
+            <ActaNacimientoDetail />
+          </ProtectedRoute>
+        } />
         
-        {/* Páginas de servicios detalle */}
-        <Route path="/actas/acta-nacimiento" element={<ActaNacimientoDetail />} />
+        {/* Categorias protegidas*/} 
+        <Route path="/rfc" element={
+          <ProtectedRoute>
+            <RFCPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/curp" element={
+          <ProtectedRoute>
+            <CURPPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/correcciones" element={
+          <ProtectedRoute>
+            <CorreccionesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/extranjeros" element={
+          <ProtectedRoute>
+            <ExtranjerosPage />
+          </ProtectedRoute>
+        } />
       </Routes>
     </AnimatePresence>
   );
@@ -55,9 +97,11 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <Router>
-      <AnimatedRoutes />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AnimatedRoutes />
+      </Router>
+    </AuthProvider>
   );
 }
 

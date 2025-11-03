@@ -1,23 +1,33 @@
 import React, { useState } from 'react';
 import { Wallet, MessageSquare, ChevronDown } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function TopBar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  
-  // Datos del usuario
-  const userName = "Usuario Demo";
-  const userBalance = 150;
+  const { user, logout } = useAuth();
 
   // Iniciales del usuario
   const getInitials = (name) => {
-    const parts = name.trim().split(' ');
+    // Verificación más robusta
+    if (!name || typeof name !== 'string' || name.trim() === '') {
+      return 'UD';
+    }
+    
+    const trimmedName = name.trim();
+    const parts = trimmedName.split(' ');
+    
     if (parts.length >= 2) {
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     }
-    return name.slice(0, 2).toUpperCase();
+    
+    return trimmedName.slice(0, 2).toUpperCase();
   };
 
-  const initials = getInitials(userName);
+  const initials = getInitials(user?.fullName);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header className="bg-white border-b border-gray-100 h-16 flex items-center justify-between px-8 fixed top-0 right-0 left-16 z-40 shadow-sm backdrop-blur-sm bg-white/95">
@@ -37,12 +47,13 @@ export default function TopBar() {
         </div>
 
         {/* Nombre y Dropdown */}
+        <div className="relative"> 
         <button
           onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
           className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 group cursor-pointer"
         >
           <span className="text-gray-800 text-base font-semibold">
-            {userName}
+            {user?.fullName || 'Usuario'}
           </span>
           <ChevronDown
             className={`w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-gray-700 ${
@@ -51,6 +62,23 @@ export default function TopBar() {
             strokeWidth={2.5}
           />
         </button>
+        </div>
+
+        {/* Dropdown Menu */}
+          {isUserMenuOpen && (
+            <div className="absolute top-12 left-0 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50 min-w-48">
+              <div className="px-4 py-2 border-b border-gray-100">
+                <p className="text-sm font-semibold text-gray-800">{user?.fullName}</p>
+                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          )}
       </div>
 
       {/* Lado Derecho - Acciones y Balance */}
@@ -86,7 +114,7 @@ export default function TopBar() {
           <div className="flex flex-col">
             <span className="text-xs text-gray-500 font-medium">Balance</span>
             <span className="text-base font-bold text-gray-900">
-              ${userBalance.toFixed(2)}
+              ${user?.balance?.toFixed(2) || '0.00'}
             </span>
           </div>
         </div>
