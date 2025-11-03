@@ -1,32 +1,91 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/layout/Sidebar';
 import TopBar from '../components/layout/TopBar';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
-import { CheckCircle, Clock, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, XCircle, Download, RefreshCw } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { apiService } from '../services/api';
 
 export default function OrderHistory() {
   const [activeFilter, setActiveFilter] = useState('Todas');
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  useAuth();
 
-  // Datos hardcodeados de órdenes
-  const allOrders = [
-    { id: '#0001', servicio: 'Acta de Nacimiento', fecha: '25/10/2025', estado: 'Completado', precio: '15.00' },
-    { id: '#0002', servicio: 'RFC', fecha: '28/10/2025', estado: 'En Proceso', precio: '200.00' },
-    { id: '#0003', servicio: 'CURP', fecha: '29/10/2025', estado: 'En Proceso', precio: '100.00' },
-    { id: '#0004', servicio: 'Acta de Matrimonio', fecha: '30/10/2025', estado: 'Completado', precio: '15.00' },
-    { id: '#0005', servicio: 'e.firma', fecha: '30/10/2025', estado: 'Cancelado', precio: '300.00' },
-    { id: '#0006', servicio: 'CSF con RFC', fecha: '30/10/2025', estado: 'Cancelado', precio: '250.00' }
-  ];
-
-  // Filtros disponibles (sin "Pendiente")
+  // Filtros disponibles (mapeados a los estados del backend)
   const filters = ['Todas', 'En Proceso', 'Completado', 'Cancelado'];
+
+  // Mapeo de estados del backend a frontend
+  const statusMap = {
+    'pending': 'En Proceso',
+    'completed': 'Completado',
+    'cancelled': 'Cancelado'
+  };
+
+  // Mapeo inverso para filtros
+  const filterMap = {
+    'Todas': null,
+    'En Proceso': 'pending',
+    'Completado': 'completed',
+    'Cancelado': 'cancelled'
+  };
+
+  // Cargar órdenes al montar el componente
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const ordersData = await apiService.getUserOrders();
+      console.log('Órdenes recibidas:', ordersData);
+      setOrders(ordersData);
+    } catch (err) {
+      console.error('Error cargando órdenes:', err);
+      setError('No se pudieron cargar las órdenes. Intenta nuevamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filtrar órdenes según el filtro activo
   const filteredOrders = activeFilter === 'Todas' 
-    ? allOrders 
-    : allOrders.filter(order => order.estado === activeFilter);
+    ? orders 
+    : orders.filter(order => order.status === filterMap[activeFilter]);
+
+  // Función para formatear fecha
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('es-MX', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  };
+
+  // Función para obtener el nombre del servicio en español
+  const getServiceName = (documentType) => {
+    const serviceNames = {
+      'acta-nacimiento': 'Acta de Nacimiento',
+      'acta-matrimonio': 'Acta de Matrimonio',
+      'acta-defuncion': 'Acta de Defunción',
+      'curp': 'CURP',
+      'rfc': 'RFC',
+      'e-firma': 'e.Firma',
+      'csf': 'CSF con RFC',
+      'correccion': 'Corrección de Acta',
+      'naturalizacion': 'Naturalización'
+    };
+    
+    return serviceNames[documentType] || documentType;
+  };
 
   // Función para obtener el badge completo con ícono según estado
-  const getBadge = (estado) => {
+  const getBadge = (status) => {
+    const estado = statusMap[status] || 'En Proceso';
+    
     const badgeStyles = {
       'En Proceso': {
         bg: 'bg-blue-50',
@@ -51,7 +110,7 @@ export default function OrderHistory() {
       }
     };
 
-    const style = badgeStyles[estado] || badgeStyles['Pendiente'];
+    const style = badgeStyles[estado];
 
     return (
       <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border font-medium text-sm ${style.bg} ${style.text} ${style.border}`}>
@@ -61,9 +120,39 @@ export default function OrderHistory() {
     );
   };
 
-  const handleVerDetalle = (orderId) => {
-    console.log('Ver orden', orderId);
+  const handleDescargar = async (orderId) => {
+    try {
+      // Aquí implementarías la lógica para descargar el documento
+      console.log('Descargando orden:', orderId);
+      // Ejemplo: await apiService.downloadOrder(orderId);
+      alert(`Funcionalidad de descarga para orden ${orderId} será implementada próximamente`);
+    } catch (error) {
+      console.error('Error descargando:', error);
+      alert('Error al intentar descargar el documento');
+    }
   };
+
+  const handleVerDetalle = (orderId) => {
+    console.log('Ver detalle de orden:', orderId);
+    // Aquí podrías navegar a una página de detalle o mostrar un modal
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex">
+        <Sidebar />
+        <div className="flex-1 ml-[4.5rem]">
+          <TopBar />
+          <div className="bg-white min-h-screen mt-7 p-8 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Cargando historial de órdenes...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
@@ -82,15 +171,35 @@ export default function OrderHistory() {
             <Breadcrumbs 
               items={[
                 { label: 'Home', path: '/dashboard' },
-                { label: 'Historial de Órdenes', path: '/orders' }
+                { label: 'Historial de Órdenes', path: '/dashboard/orders' }
               ]} 
             />
           </div>
 
-          {/* Título */}
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            Historial de Órdenes
-          </h1>
+          {/* Header con título y botón de actualizar */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-800">
+              Historial de Ódenes
+            </h1>
+            <button
+              onClick={fetchOrders}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 disabled:opacity-50 transition-colors"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Actualizar
+            </button>
+          </div>
+
+          {/* Mensaje de error */}
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center">
+                <XCircle className="w-5 h-5 text-red-400 mr-2" />
+                <span className="text-red-800">{error}</span>
+              </div>
+            </div>
+          )}
 
           {/* Filtros rápidos */}
           <div className="flex gap-3 mb-8">
@@ -147,34 +256,48 @@ export default function OrderHistory() {
                       }`}
                     >
                       <td className="py-3 px-4 text-sm font-medium text-gray-800">
-                        {order.id}
+                        #{order.id.slice(-8).toUpperCase()}
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-700">
-                        {order.servicio}
+                        {getServiceName(order.documentType)}
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-600">
-                        {order.fecha}
+                        {formatDate(order.createdAt)}
                       </td>
                       <td className="py-3 px-4">
-                        {getBadge(order.estado)}
+                        {getBadge(order.status)}
                       </td>
                       <td className="py-3 px-4 text-sm font-semibold text-gray-800">
-                        ${order.precio}
+                        ${order.pricePaid.toFixed(2)}
                       </td>
                       <td className="py-3 px-4">
-                        <button
-                          onClick={() => handleVerDetalle(order.id)}
-                          className="px-3 py-1.5 text-xs font-medium text-teal-600 border border-teal-600 rounded-lg hover:bg-teal-50 transition-colors"
-                        >
-                          Descargar
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleDescargar(order.id)}
+                            disabled={order.status !== 'completed'}
+                            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-teal-600 border border-teal-600 rounded-lg hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            title={order.status !== 'completed' ? 'Solo disponible para órdenes completadas' : 'Descargar documento'}
+                          >
+                            <Download className="w-3 h-3" />
+                            Descargar
+                          </button>
+                          <button
+                            onClick={() => handleVerDetalle(order.id)}
+                            className="px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
+                            Detalle
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td colSpan="6" className="py-8 text-center text-gray-500">
-                      No hay órdenes con el estado "{activeFilter}"
+                      {orders.length === 0 
+                        ? 'Aún no has realizado ninguna orden' 
+                        : `No hay órdenes con el estado "${activeFilter}"`
+                      }
                     </td>
                   </tr>
                 )}
@@ -182,10 +305,10 @@ export default function OrderHistory() {
             </table>
           </div>
 
-          {/* Mensaje informativo si no hay resultados */}
-          {filteredOrders.length === 0 && (
-            <div className="mt-4 text-sm text-gray-600 text-center">
-              Intenta con otro filtro para ver más órdenes
+          {/* Información adicional */}
+          {filteredOrders.length > 0 && (
+            <div className="mt-4 text-sm text-gray-600">
+              Mostrando {filteredOrders.length} de {orders.length} órdenes totales
             </div>
           )}
         </div>

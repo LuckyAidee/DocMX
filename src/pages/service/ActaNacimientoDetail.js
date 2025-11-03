@@ -4,9 +4,12 @@ import Sidebar from '../../components/layout/Sidebar';
 import TopBar from '../../components/layout/TopBar';
 import Breadcrumbs from '../../components/shared/Breadcrumbs';
 import { Clock, DollarSign, FileText, ShoppingCart, Shield, CheckCircle, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { apiService } from '../../services/api';
 
 export default function ActaNacimientoDetail() {
   const navigate = useNavigate();
+  const { user, updateUser } = useAuth(); // ✅ Agregamos updateUser para actualizar el balance
   const [curp, setCurp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -14,12 +17,14 @@ export default function ActaNacimientoDetail() {
 
   const serviceData = {
     name: 'Acta de Nacimiento',
-    price: '15.00',
+    price: 15.00, // ✅ Cambiado a número para cálculos
     deliveryTime: '20 Minutos',
-    description: 'Obtén tu acta de nacimiento certificada de manera rápida y segura. Documento oficial expedido por el Registro Civil.'
+    description: 'Obtén tu acta de nacimiento certificada de manera rápida y segura. Documento oficial expedido por el Registro Civil.',
+    documentType: 'acta-nacimiento' // ✅ Agregamos el tipo de documento para el backend
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
+    // Validaciones
     if (!curp.trim()) {
       setError('Por favor ingresa tu CURP');
       return;
@@ -28,17 +33,61 @@ export default function ActaNacimientoDetail() {
       setError('El CURP debe tener 18 caracteres');
       return;
     }
+
+    // ✅ Verificar saldo suficiente
+    if (user.balance < serviceData.price) {
+      setError('Saldo insuficiente. Por favor recarga tu cuenta.');
+      return;
+    }
+
     setError('');
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      console.log('🔄 Creando orden de Acta de Nacimiento...');
+      
+      // ✅ Crear la orden en el backend
+      const orderData = {
+        documentType: serviceData.documentType,
+        pricePaid: serviceData.price,
+        details: {
+          curp: curp.toUpperCase(),
+          service: serviceData.name,
+          deliveryTime: serviceData.deliveryTime,
+          requestedAt: new Date().toISOString()
+        }
+      };
+
+      const response = await apiService.createOrder(orderData);
+      console.log('✅ Orden creada exitosamente:', response);
+
+      // ✅ Actualizar el balance del usuario en el contexto
+      const newBalance = user.balance - serviceData.price;
+      updateUser({ balance: newBalance });
+
+      // ✅ Mostrar modal de éxito
       setShowSuccessModal(true);
-    }, 1000);
+
+    } catch (err) {
+      console.error('❌ Error creando orden:', err);
+      setError(err.message || 'Error al procesar la compra. Intenta nuevamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleContinue = () => {
     setShowSuccessModal(false);
-    navigate('/orders');
+    navigate('/dashboard/orders');
+  };
+
+  // ✅ Función para validar formato básico de CURP
+  const isValidCURP = (curp) => {
+    if (curp.length !== 18) return false;
+    
+    // Expresión regular básica para CURP mexicano
+    const curpRegex = /^[A-Z]{4}\d{6}[A-Z]{6}[A-Z0-9]{2}$/;
+    return curpRegex.test(curp);
   };
 
   return (
@@ -49,8 +98,6 @@ export default function ActaNacimientoDetail() {
 
         {/* Contenedor principal con fondo blanco */}
         <div className="bg-white min-h-screen mt-[60px]">
-
-
           {/* Breadcrumbs */}
           <div className="px-8 pt-0 pb-1">
             <Breadcrumbs 
@@ -180,7 +227,7 @@ export default function ActaNacimientoDetail() {
                       </div>
                       <div className="flex-1">
                         <p className="text-xs text-gray-500 font-medium">Precio</p>
-                        <p className="text-2xl font-black text-gray-800">${serviceData.price}</p>
+                        <p className="text-2xl font-black text-gray-800">${serviceData.price.toFixed(2)}</p>
                       </div>
                       <div className="opacity-0 group-hover/price:opacity-100 transition-opacity duration-300">
                         <CheckCircle className="w-5 h-5 text-teal-500" strokeWidth={2.5} />
@@ -254,7 +301,7 @@ export default function ActaNacimientoDetail() {
                         <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                           <div 
                             className={`h-full transition-all duration-300 ${
-                              curp.length === 18 ? 'bg-green-500' : 'bg-teal-500'
+                              curp.length === 18 && isValidCURP(curp) ? 'bg-green-500' : 'bg-teal-500'
                             }`}
                             style={{width: `${(curp.length / 18) * 100}%`}}
                           ></div>
@@ -269,7 +316,7 @@ export default function ActaNacimientoDetail() {
                         </div>
                       )}
                       
-                      {curp.length === 18 && !error && (
+                      {curp.length === 18 && isValidCURP(curp) && !error && (
                         <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
                           <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
                           <p className="text-sm text-green-700 font-medium">CURP válido - Listo para continuar</p>
@@ -305,24 +352,42 @@ export default function ActaNacimientoDetail() {
                         <div className="pt-3 mt-3 border-t-2 border-gray-300 flex justify-between items-center">
                           <span className="font-bold text-gray-800 text-lg">Total a pagar:</span>
                           <span className="text-3xl font-black bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent">
-                            ${serviceData.price}
+                            ${serviceData.price.toFixed(2)}
                           </span>
                         </div>
+
+                        {/* ✅ Información del saldo actual */}
+                        <div className="pt-2 mt-2 border-t border-gray-300 flex justify-between items-center">
+                          <span className="text-sm text-gray-600">Tu saldo actual:</span>
+                          <span className={`text-sm font-semibold ${user.balance >= serviceData.price ? 'text-green-600' : 'text-red-600'}`}>
+                            ${user.balance?.toFixed(2) || '0.00'}
+                          </span>
+                        </div>
+
+                        {/* ✅ Saldo después de la compra */}
+                        {user.balance >= serviceData.price && (
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-600">Saldo después de la compra:</span>
+                            <span className="font-semibold text-green-600">
+                              ${(user.balance - serviceData.price).toFixed(2)}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
                     {/* Botón de compra mejorado */}
                     <button
                       onClick={handlePurchase}
-                      disabled={isLoading}
+                      disabled={isLoading || curp.length !== 18 || !isValidCURP(curp) || user.balance < serviceData.price}
                       className={`w-full py-5 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-3 transition-all duration-300 shadow-lg relative overflow-hidden
-                        ${isLoading 
+                        ${isLoading || curp.length !== 18 || !isValidCURP(curp) || user.balance < serviceData.price
                           ? 'bg-gray-400 cursor-not-allowed' 
                           : 'bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]'
                         }`}
                     >
                       {/* Glow effect en hover */}
-                      {!isLoading && (
+                      {!isLoading && curp.length === 18 && isValidCURP(curp) && user.balance >= serviceData.price && (
                         <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-cyan-400 opacity-0 hover:opacity-20 transition-opacity duration-300 blur-xl"></div>
                       )}
                       
@@ -331,6 +396,11 @@ export default function ActaNacimientoDetail() {
                           <>
                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             Procesando...
+                          </>
+                        ) : user.balance < serviceData.price ? (
+                          <>
+                            <AlertCircle className="w-6 h-6" strokeWidth={2.5} />
+                            Saldo Insuficiente
                           </>
                         ) : (
                           <>
@@ -380,8 +450,11 @@ export default function ActaNacimientoDetail() {
                 ¡Compra Exitosa!
               </h2>
               <p className="text-gray-600 text-base leading-relaxed">
-                Tu solicitud ha sido procesada correctamente.<br/>
+                Tu solicitud de <strong>Acta de Nacimiento</strong> ha sido procesada correctamente.<br/>
                 Tu documento estará listo en <span className="font-bold text-teal-600">20 minutos</span>.
+              </p>
+              <p className="text-sm text-gray-500">
+                Se descontaron <strong>${serviceData.price.toFixed(2)}</strong> de tu saldo.
               </p>
             </div>
             
