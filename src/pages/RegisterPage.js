@@ -106,7 +106,7 @@ export default function RegisterPage() {
       alert('¡Cuenta creada exitosamente!\n\nPuedes iniciar sesión ahora.');
       navigate('/dashboard');
     } catch (error) {
-      console.error('❌ Error en registro:', error);
+      console.error('Error en registro:', error);
       
       let errorMessage = error.message || 'Error al crear la cuenta. Inténtalo de nuevo.';
       const newErrors = {};

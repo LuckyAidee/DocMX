@@ -63,22 +63,6 @@ export default function TopBar() {
           />
         </button>
         </div>
-
-        {/* Dropdown Menu */}
-          {isUserMenuOpen && (
-            <div className="absolute top-12 left-0 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50 min-w-48">
-              <div className="px-4 py-2 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-800">{user?.fullName}</p>
-                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-              >
-                <span>Cerrar sesión</span>
-              </button>
-            </div>
-          )}
       </div>
 
       {/* Lado Derecho - Acciones y Balance */}

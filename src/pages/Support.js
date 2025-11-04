@@ -8,7 +8,7 @@ export default function Support() {
   const [openFaq, setOpenFaq] = useState(null);
 
   const handleWhatsAppClick = () => {
-    window.open('https://wa.me/5215555555555', '_blank');
+    window.open('https://wa.me/2221325766', '_blank');
   };
 
   const faqs = [
@@ -74,7 +74,7 @@ export default function Support() {
                       <h3 className="text-sm font-semibold text-teal-900 mb-2">
                         Chatear en WhatsApp
                       </h3>
-                      <p className="text-teal-800 font-medium">+52 55 5555 5555</p>
+                      <p className="text-teal-800 font-medium">+52 22 2132 5766</p>
                     </div>
 
                     <div className="pt-3 border-t border-teal-200">
