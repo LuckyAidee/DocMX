@@ -17,7 +17,7 @@ export default function CURPPage() {
       price: '200.00',
       deliveryTime: '24-48 hrs',
       documentType: 'curp',
-      backgroundColor: '#7c3aed',
+      backgroundColor: '#475569', // <-- CAMBIO (Color de RFCPage)
       heightClass: "h-96",
       path: '/curp/unificacion'
     },
@@ -27,7 +27,7 @@ export default function CURPPage() {
       price: '150.00',
       deliveryTime: '24 hrs',
       documentType: 'curp',
-      backgroundColor: '#9333ea',
+      backgroundColor: '#64748b', // <-- CAMBIO (Color de RFCPage)
       path: '/curp/baja'
     },
     {
@@ -36,7 +36,7 @@ export default function CURPPage() {
       price: '180.00',
       deliveryTime: '24-48 hrs',
       documentType: 'curp',
-      backgroundColor: '#a855f7',
+      backgroundColor: '#334155', // <-- CAMBIO (Color de RFCPage)
       path: '/curp/alta'
     },
     {
@@ -45,7 +45,7 @@ export default function CURPPage() {
       price: '50.00',
       deliveryTime: '20 min',
       documentType: 'curp',
-      backgroundColor: '#c084fc',
+      backgroundColor: '#1e293b', // <-- CAMBIO (Color de RFCPage)
       path: '/curp/descargar'
     },
     {
@@ -54,7 +54,7 @@ export default function CURPPage() {
       price: '250.00',
       deliveryTime: '48-72 hrs',
       documentType: 'curp',
-      backgroundColor: '#d8b4fe',
+      backgroundColor: '#0f172a', // <-- CAMBIO (Color de RFCPage)
       path: '/curp/certificacion'
     }
   ];
