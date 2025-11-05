@@ -16,8 +16,8 @@ export default function ActasPage() {
       name: 'Acta de Nacimiento',
       price: '15.00',
       deliveryTime: '20 Minutos',
-      documentType: 'acta-nacimiento', // 👈 AGREGAR ESTO
-      backgroundColor: '#6b7280',
+      documentType: 'acta-nacimiento',
+      backgroundColor: '#475569', // <-- CAMBIO (Color de RFCPage)
       heightClass: "h-96",
       path: '/actas/acta-nacimiento'
     },
@@ -26,8 +26,8 @@ export default function ActasPage() {
       name: 'Acta de Matrimonio',
       price: '15.00',
       deliveryTime: '20 Minutos',
-      documentType: 'acta-matrimonio', // 👈 AGREGAR ESTO
-      backgroundColor: '#8b5cf6',
+      documentType: 'acta-matrimonio',
+      backgroundColor: '#64748b', // <-- CAMBIO (Color de RFCPage)
       path: '/actas/acta-matrimonio'
     },
     {
@@ -35,8 +35,8 @@ export default function ActasPage() {
       name: 'Acta de Defunción',
       price: '15.00',
       deliveryTime: '20 Minutos',
-      documentType: 'acta-defuncion', // 👈 AGREGAR ESTO
-      backgroundColor: '#64748b',
+      documentType: 'acta-defuncion',
+      backgroundColor: '#334155', // <-- CAMBIO (Color de RFCPage)
       path: '/actas/acta-defuncion'
     }
   ];
