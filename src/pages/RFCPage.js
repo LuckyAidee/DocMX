@@ -16,7 +16,7 @@ export default function RFCPage() {
       name: 'RFC por primera vez',
       price: '250.00',
       deliveryTime: '24-48 hrs',
-      documentType: 'rfc',
+      documentType: 'rfc-primera-vez',
       backgroundColor: '#475569',
       heightClass: "h-96",
       path: '/rfc/rfc-primera-vez'
@@ -53,7 +53,7 @@ export default function RFCPage() {
       name: 'Modificaciones RFC',
       price: '150.00',
       deliveryTime: '24 hrs',
-      documentType: 'rfc',
+      documentType: 'rfc-modificaciones',
       backgroundColor: '#0f172a',
       path: '/rfc/modificaciones'
     }

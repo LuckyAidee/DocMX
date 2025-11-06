@@ -16,7 +16,7 @@ export default function CURPPage() {
       name: 'Unificación de CURP',
       price: '200.00',
       deliveryTime: '24-48 hrs',
-      documentType: 'curp',
+      documentType: 'curp-unificacion',
       backgroundColor: '#475569', // <-- CAMBIO (Color de RFCPage)
       heightClass: "h-96",
       path: '/curp/unificacion'
@@ -26,7 +26,7 @@ export default function CURPPage() {
       name: 'Dar de baja CURP',
       price: '150.00',
       deliveryTime: '24 hrs',
-      documentType: 'curp',
+      documentType: 'curp-baja',
       backgroundColor: '#64748b', // <-- CAMBIO (Color de RFCPage)
       path: '/curp/baja'
     },
@@ -35,7 +35,7 @@ export default function CURPPage() {
       name: 'Dar de alta CURP',
       price: '180.00',
       deliveryTime: '24-48 hrs',
-      documentType: 'curp',
+      documentType: 'curp-alta',
       backgroundColor: '#334155', // <-- CAMBIO (Color de RFCPage)
       path: '/curp/alta'
     },
@@ -44,7 +44,7 @@ export default function CURPPage() {
       name: 'Descargar CURP',
       price: '50.00',
       deliveryTime: '20 min',
-      documentType: 'curp',
+      documentType: 'curp-descargar',
       backgroundColor: '#1e293b', // <-- CAMBIO (Color de RFCPage)
       path: '/curp/descargar'
     },
@@ -53,7 +53,7 @@ export default function CURPPage() {
       name: 'Certificación CURP',
       price: '250.00',
       deliveryTime: '48-72 hrs',
-      documentType: 'curp',
+      documentType: 'curp-certificacion',
       backgroundColor: '#0f172a', // <-- CAMBIO (Color de RFCPage)
       path: '/curp/certificacion'
     }
