@@ -125,22 +125,16 @@ const DocumentSVG = ({ type, name }) => {
 
     'curp-descargar': (
       <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
-        <rect width="200" height="260" fill="#f3e5f5" rx="4"/>
-        <rect width="200" height="55" fill="#6a1b9a" rx="4"/>
-        <text x="100" y="22" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">DESCARGAR</text>
-        <text x="100" y="42" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">CURP</text>
-        
-        {/* Icono de descarga */}
-        <circle cx="100" cy="95" r="28" fill="#6a1b9a" opacity="0.2"/>
-        <path d="M 100 75 L 100 105" stroke="#6a1b9a" strokeWidth="4" opacity="0.5"/>
-        <path d="M 90 95 L 100 105 L 110 95" stroke="#6a1b9a" strokeWidth="4" fill="none" opacity="0.5"/>
-        <rect x="85" y="108" width="30" height="3" fill="#6a1b9a" opacity="0.5" rx="1"/>
-        
-        <rect x="20" y="135" width="160" height="10" fill="#333" opacity="0.2" rx="2"/>
-        <rect x="20" y="155" width="140" height="10" fill="#333" opacity="0.2" rx="2"/>
-        <rect x="20" y="175" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
-        <rect x="30" y="205" width="140" height="30" fill="#6a1b9a" opacity="0.1" rx="4"/>
-        <text x="100" y="225" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">PDF DIGITAL</text>
+        <rect width="200" height="260" fill="#e8f5e9" rx="4"/>
+        <rect width="200" height="50" fill="#1565c0" rx="4"/>
+        <text x="100" y="30" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold">CURP</text>
+        <circle cx="50" cy="90" r="20" fill="#1565c0" opacity="0.2"/>
+        <circle cx="150" cy="90" r="20" fill="#1565c0" opacity="0.2"/>
+        <rect x="20" y="120" width="160" height="12" fill="#333" opacity="0.2" rx="2"/>
+        <rect x="20" y="140" width="140" height="12" fill="#333" opacity="0.2" rx="2"/>
+        <rect x="20" y="160" width="120" height="12" fill="#333" opacity="0.2" rx="2"/>
+        <rect x="30" y="200" width="140" height="35" fill="#1565c0" opacity="0.15" rx="4"/>
+        <text x="100" y="222" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">ABCD123456HDFRNN09</text>
       </svg>
     ),
 
@@ -166,7 +160,7 @@ const DocumentSVG = ({ type, name }) => {
     ),
 
     // =====================================
-    // SAT - Seccion de Servicios SAT (4 disenos)
+    // SAT - Sección de Servicios SAT (4 diseños)
     // =====================================
     'rfc-primera-vez': (
       <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
@@ -174,9 +168,11 @@ const DocumentSVG = ({ type, name }) => {
         <rect width="200" height="60" fill="#2e7d32" rx="4"/>
         <text x="100" y="22" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">RFC POR</text>
         <text x="100" y="40" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">PRIMERA VEZ</text>
+        
         {/* Icono de nuevo/estrella */}
         <circle cx="100" cy="100" r="30" fill="#2e7d32" opacity="0.2"/>
         <path d="M 100 75 L 105 90 L 120 92 L 110 103 L 113 118 L 100 110 L 87 118 L 90 103 L 80 92 L 95 90 Z" fill="#2e7d32" opacity="0.4"/>
+        
         <rect x="20" y="140" width="160" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="20" y="160" width="140" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="20" y="180" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
@@ -186,21 +182,23 @@ const DocumentSVG = ({ type, name }) => {
     ),
 
     'rfc-modificaciones': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duracion-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
         <rect width="200" height="260" fill="#fff3e0" rx="4"/>
         <rect width="200" height="60" fill="#e65100" rx="4"/>
         <text x="100" y="25" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">MODIFICACIONES</text>
         <text x="100" y="45" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold">RFC</text>
-        {/* Icono de edicion/lapiz */}
+        
+        {/* Icono de edición/lápiz */}
         <circle cx="100" cy="100" r="30" fill="#e65100" opacity="0.2"/>
         <path d="M 90 110 L 95 105 L 105 95 L 110 100 Z" fill="#e65100" opacity="0.4"/>
         <rect x="89" y="109" width="8" height="3" fill="#e65100" opacity="0.3" transform="rotate(-45 93 110)"/>
         <path d="M 107 97 L 111 93 L 113 95 L 109 99 Z" fill="#e65100" opacity="0.5"/>
+        
         <rect x="20" y="140" width="160" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="20" y="160" width="140" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="20" y="180" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="30" y="210" width="140" height="30" fill="#e65100" opacity="0.1" rx="4"/>
-        <text x="100" y="230" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">ACTUALIZACION</text>
+        <text x="100" y="230" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">ACTUALIZACIÓN</text>
       </svg>
     ),
 
@@ -209,7 +207,7 @@ const DocumentSVG = ({ type, name }) => {
         <rect width="200" height="260" fill="#f0f8ff" rx="4"/>
         <rect width="200" height="55" fill="#0d47a1" rx="4"/>
         <text x="100" y="22" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">CONSTANCIA DE</text>
-        <text x="100" y="38" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">SITUACION FISCAL</text>
+        <text x="100" y="38" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">SITUACIÓN FISCAL</text>
         <circle cx="100" cy="80" r="20" fill="#0d47a1" opacity="0.2"/>
         <text x="100" y="87" textAnchor="middle" fill="#0d47a1" fontSize="16" fontWeight="bold">SAT</text>
         <rect x="20" y="115" width="160" height="8" fill="#333" opacity="0.2" rx="2"/>
@@ -228,23 +226,26 @@ const DocumentSVG = ({ type, name }) => {
         <rect width="200" height="60" fill="#1565c0" rx="4"/>
         <text x="100" y="30" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">e.firma</text>
         <text x="100" y="50" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">SAT</text>
+        
         {/* Icono de llave */}
         <circle cx="100" cy="95" r="18" fill="#1565c0" opacity="0.2"/>
         <rect x="95" y="85" width="10" height="15" fill="#1565c0" opacity="0.4" rx="5"/>
         <rect x="92" y="100" width="16" height="12" fill="#1565c0" opacity="0.4" rx="2"/>
         <rect x="95" y="105" width="3" height="5" fill="#1565c0" opacity="0.6"/>
         <rect x="102" y="105" width="3" height="5" fill="#1565c0" opacity="0.6"/>
-        {/* Lineas de texto */}
+        
+        {/* Líneas de texto */}
         <rect x="20" y="130" width="160" height="8" fill="#333" opacity="0.2" rx="2"/>
         <rect x="20" y="145" width="140" height="8" fill="#333" opacity="0.2" rx="2"/>
         <rect x="20" y="160" width="120" height="8" fill="#333" opacity="0.2" rx="2"/>
+        
         {/* Certificado digital */}
         <rect x="30" y="185" width="140" height="50" fill="#1565c0" opacity="0.1" rx="4"/>
         <text x="100" y="205" textAnchor="middle" fill="#1565c0" fontSize="10" fontWeight="bold" opacity="0.6">CERTIFICADO DIGITAL</text>
         <text x="100" y="220" textAnchor="middle" fill="#333" fontSize="9" opacity="0.5">FIEL AUTORIZADA</text>
       </svg>
-    ),    
-    
+    ),
+
     // =====================================
     // CORRECCIONES - Sección de Correcciones (5 tipos)
     // =====================================
