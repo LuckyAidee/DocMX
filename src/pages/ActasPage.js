@@ -19,7 +19,7 @@ export default function ActasPage() {
       documentType: 'acta-nacimiento',
       backgroundColor: '#475569', // <-- CAMBIO (Color de RFCPage)
       heightClass: "h-96",
-      path: '/actas/acta-nacimiento'
+      path: '/servicio/acta-nacimiento'
     },
     {
       id: 2,
@@ -28,7 +28,7 @@ export default function ActasPage() {
       deliveryTime: '20 Minutos',
       documentType: 'acta-matrimonio',
       backgroundColor: '#64748b', // <-- CAMBIO (Color de RFCPage)
-      path: '/actas/acta-matrimonio'
+      path: '/servicio/acta-matrimonio'
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ export default function ActasPage() {
       deliveryTime: '20 Minutos',
       documentType: 'acta-defuncion',
       backgroundColor: '#334155', // <-- CAMBIO (Color de RFCPage)
-      path: '/actas/acta-defuncion'
+      path: '/servicio/acta-defuncion'
     }
   ];
 

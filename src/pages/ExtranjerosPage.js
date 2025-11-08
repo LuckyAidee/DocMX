@@ -4,31 +4,33 @@ import Sidebar from '../components/layout/Sidebar';
 import TopBar from '../components/layout/TopBar';
 import SearchBar from '../components/layout/SearchBar';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
+// 1. IMPORTAR EL NUEVO HERO
 import CategoryHeroExtranjeros from '../components/shared/CategoryHeroExtranjeros';
 import ServiceCard from '../components/shared/ServiceCard';
 
 export default function ExtranjerosPage() {
   const navigate = useNavigate();
   
+  // 2. DEFINIR LOS SERVICIOS DE EXTRANJEROS
   const extranjerosServices = [
     {
       id: 1,
-      name: 'Carta de Naturalización',
-      price: '850.00',
-      deliveryTime: '10-15 días',
-      documentType: 'carta-naturalizacion',
-      backgroundColor: '#475569',
-      path: '/extranjeros/carta-naturalizacion'
+      name: 'Carta de naturalización',
+      price: '1500.00', // Precio de ejemplo
+      deliveryTime: 'Trámite Especial',
+      documentType: 'carta-naturalizacion', // [cite: ServiceCard.js]
+      backgroundColor: '#475569', // Paleta Slate [cite: RFCPage.js]
+      path: '/servicio/carta-naturalizacion' // Ruta dinámica
     },
     {
       id: 2,
-      name: 'Naturalizaciones Mexicanas',
-      price: '900.00',
-      deliveryTime: '10-15 días',
-      documentType: 'naturalizaciones-mexicanas',
-      backgroundColor: '#64748b',
-      path: '/extranjeros/naturalizaciones-mexicanas'
-    }
+      name: 'Naturalizaciones mexicanas',
+      price: '1200.00', // Precio de ejemplo
+      deliveryTime: 'Trámite Especial',
+      documentType: 'naturalizaciones-mexicanas', // [cite: ServiceCard.js]
+      backgroundColor: '#334155', // Paleta Slate [cite: RFCPage.js]
+      path: '/servicio/naturalizaciones-mexicanas'
+    },
   ];
 
   return (
@@ -51,21 +53,23 @@ export default function ExtranjerosPage() {
             <Breadcrumbs 
               items={[
                 { label: 'Home', path: '/dashboard' },
+                // 3. ACTUALIZAR BREADCRUMB
                 { label: 'Extranjeros', path: '/extranjeros' }
               ]} 
             />
           </div>
           
-          {/* CategoryHeroExtranjeros - con padding horizontal */}
+          {/* 4. USAR EL NUEVO HERO Y DATOS */}
           <div className="px-8 mt-1">
-            <CategoryHeroExtranjeros 
+            <CategoryHeroExtranjeros
               title="EXTRANJEROS"
-              subtitle="Trámites de naturalización y ciudadanía mexicana"
+              subtitle="Trámites de ciudadanía y naturalización"
             />
           </div>
           
           {/* Fila horizontal de servicios */}
           <div className="px-8 py-10">
+            {/* 5. USAR EL NUEVO ARRAY DE SERVICIOS */}
             <div className="flex gap-6 justify-center flex-wrap">
               {extranjerosServices.map((service) => (
                 <div 

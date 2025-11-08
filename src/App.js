@@ -4,7 +4,6 @@ import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// IMPORTS CORREGIDOS
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
@@ -12,18 +11,13 @@ import OrderHistory from './pages/OrderHistory';
 import AddBalance from './pages/AddBalance';
 import Support from './pages/Support';
 
-// Páginas de categorías
 import ActasPage from './pages/ActasPage';
 import RFCPage from './pages/RFCPage';
 import CURPPage from './pages/CURPPage';
 import CorreccionesPage from './pages/CorreccionesPage';
 import ExtranjerosPage from './pages/ExtranjerosPage';
 
-// Páginas de servicios detalle
-import ActaNacimientoDetail from './pages/service/ActaNacimientoDetail';
-// TEMPORALMENTE comentados hasta que los creemos:
-// import ActaMatrimonioDetail from './pages/service/ActaMatrimonioDetail';
-// import ActaDefuncionDetail from './pages/service/ActaDefuncionDetail';
+import ServiceDetail from './pages/service/ServiceDetail';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -31,11 +25,9 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* Autenticación */}
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         
-        {/* Rutas protegidas del dashboard */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
@@ -57,19 +49,11 @@ function AnimatedRoutes() {
           </ProtectedRoute>
         } />
         
-        {/* Páginas de categorías */}
         <Route path="/actas" element={
           <ProtectedRoute>
             <ActasPage />
           </ProtectedRoute>
         } />
-        <Route path="/actas/acta-nacimiento" element={
-          <ProtectedRoute>
-            <ActaNacimientoDetail />
-          </ProtectedRoute>
-        } />
-        
-        {/* Categorias protegidas*/} 
         <Route path="/rfc" element={
           <ProtectedRoute>
             <RFCPage />
@@ -88,6 +72,12 @@ function AnimatedRoutes() {
         <Route path="/extranjeros" element={
           <ProtectedRoute>
             <ExtranjerosPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/servicio/:serviceId" element={
+          <ProtectedRoute>
+            <ServiceDetail />
           </ProtectedRoute>
         } />
       </Routes>
