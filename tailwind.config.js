@@ -13,11 +13,16 @@ module.exports = {
         slideUp: {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' }
         }
       },
       animation: {
         fadeIn: 'fadeIn 0.2s ease-out',
-        slideUp: 'slideUp 0.2s ease-out'
+        slideUp: 'slideUp 0.2s ease-out',
+        float: 'float 3s ease-in-out infinite'
       }
     },
   },

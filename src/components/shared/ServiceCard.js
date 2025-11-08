@@ -1,17 +1,13 @@
-import React from 'react';
-import { ArrowRight, Clock, DollarSign } from 'lucide-react';
-import './ServiceCard.css';
+import React from "react";
+import clsx from "clsx";
+import { ArrowRight, Clock, DollarSign } from "lucide-react";
+import "./ServiceCard.css";
 
-// ========================================
-// COMPONENTE DE DOCUMENTOS SVG
-// ========================================
-const DocumentSVG = ({ type, name }) => {
-  const documents = {
-    // =====================================
+export const DOCUMENTS = {
+  // =====================================
     // ACTAS - Sección de Actas de Registro Civil
     // =====================================
-    'acta-nacimiento': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+    'acta-nacimiento': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#f0f0f0" rx="4"/>
         <rect width="200" height="50" fill="#2d5016" rx="4"/>
         <text x="100" y="25" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">ACTA DE</text>
@@ -23,11 +19,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="185" width="160" height="8" fill="#333" opacity="0.15" rx="2"/>
         <rect x="20" y="200" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <path d="M 40 230 Q 60 225, 80 230 T 120 230" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
-      </svg>
-    ),
-
-    'acta-matrimonio': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'acta-matrimonio': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#fff8f0" rx="4"/>
         <rect width="200" height="55" fill="#8b4513" rx="4"/>
         <text x="100" y="25" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">ACTA DE</text>
@@ -41,11 +34,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="180" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <path d="M 40 220 Q 60 215, 80 220" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
         <path d="M 120 220 Q 140 215, 160 220" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
-      </svg>
-    ),
-
-    'acta-defuncion': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'acta-defuncion': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#f5f5f5" rx="4"/>
         <rect width="200" height="50" fill="#424242" rx="4"/>
         <text x="100" y="25" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">ACTA DE</text>
@@ -59,14 +49,11 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="185" width="160" height="8" fill="#333" opacity="0.15" rx="2"/>
         <rect x="20" y="200" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <path d="M 40 230 Q 60 225, 80 230 T 120 230" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
-      </svg>
-    ),
-
-    // =====================================
+      </svg>),
+  // =====================================
     // CURP - Sección de Servicios CURP (5 variantes)
     // =====================================
-    'curp-unificacion': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+    'curp-unificacion': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#e8f5e9" rx="4"/>
         <rect width="200" height="55" fill="#2e7d32" rx="4"/>
         <text x="100" y="25" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">UNIFICACIÓN</text>
@@ -83,11 +70,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="175" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="30" y="205" width="140" height="30" fill="#2e7d32" opacity="0.1" rx="4"/>
         <text x="100" y="225" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">ABCD123456XYZA01</text>
-      </svg>
-    ),
-
-    'curp-baja': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'curp-baja': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#ffebee" rx="4"/>
         <rect width="200" height="55" fill="#c62828" rx="4"/>
         <text x="100" y="28" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">BAJA CURP</text>
@@ -102,11 +86,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="175" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="30" y="205" width="140" height="30" fill="#c62828" opacity="0.1" rx="4"/>
         <text x="100" y="225" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold" opacity="0.4">CANCELADO</text>
-      </svg>
-    ),
-
-    'curp-alta': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'curp-alta': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#e3f2fd" rx="4"/>
         <rect width="200" height="55" fill="#1565c0" rx="4"/>
         <text x="100" y="28" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">ALTA CURP</text>
@@ -120,11 +101,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="175" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="30" y="205" width="140" height="30" fill="#1565c0" opacity="0.1" rx="4"/>
         <text x="100" y="225" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">NUEVO REGISTRO</text>
-      </svg>
-    ),
-
-    'curp-descargar': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'curp-descargar': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#e8f5e9" rx="4"/>
         <rect width="200" height="50" fill="#1565c0" rx="4"/>
         <text x="100" y="30" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold">CURP</text>
@@ -135,11 +113,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="160" width="120" height="12" fill="#333" opacity="0.2" rx="2"/>
         <rect x="30" y="200" width="140" height="35" fill="#1565c0" opacity="0.15" rx="4"/>
         <text x="100" y="222" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">ABCD123456HDFRNN09</text>
-      </svg>
-    ),
-
-    'curp-certificacion': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'curp-certificacion': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#fff3e0" rx="4"/>
         <rect width="200" height="55" fill="#e65100" rx="4"/>
         <text x="100" y="22" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">CERTIFICACIÓN</text>
@@ -156,14 +131,11 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="175" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="30" y="205" width="140" height="30" fill="#e65100" opacity="0.1" rx="4"/>
         <text x="100" y="225" textAnchor="middle" fill="#333" fontSize="11" fontWeight="bold">DOCUMENTO OFICIAL</text>
-      </svg>
-    ),
-
-    // =====================================
+      </svg>),
+  // =====================================
     // SAT - Sección de Servicios SAT (4 diseños)
     // =====================================
-    'rfc-primera-vez': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+    'rfc-primera-vez': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#e8f5e9" rx="4"/>
         <rect width="200" height="60" fill="#2e7d32" rx="4"/>
         <text x="100" y="22" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">RFC POR</text>
@@ -178,11 +150,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="180" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="30" y="210" width="140" height="30" fill="#2e7d32" opacity="0.1" rx="4"/>
         <text x="100" y="230" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">NUEVO REGISTRO</text>
-      </svg>
-    ),
-
-    'rfc-modificaciones': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'rfc-modificaciones': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#fff3e0" rx="4"/>
         <rect width="200" height="60" fill="#e65100" rx="4"/>
         <text x="100" y="25" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">MODIFICACIONES</text>
@@ -199,11 +168,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="180" width="120" height="10" fill="#333" opacity="0.2" rx="2"/>
         <rect x="30" y="210" width="140" height="30" fill="#e65100" opacity="0.1" rx="4"/>
         <text x="100" y="230" textAnchor="middle" fill="#333" fontSize="12" fontWeight="bold">ACTUALIZACIÓN</text>
-      </svg>
-    ),
-
-    'csf': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'csf': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#f0f8ff" rx="4"/>
         <rect width="200" height="55" fill="#0d47a1" rx="4"/>
         <text x="100" y="22" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">CONSTANCIA DE</text>
@@ -217,11 +183,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="180" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <rect x="20" y="195" width="100" height="8" fill="#333" opacity="0.15" rx="2"/>
         <rect x="30" y="220" width="140" height="25" fill="#0d47a1" opacity="0.1" rx="3"/>
-      </svg>
-    ),
-
-    'e-firma': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'e-firma': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#e3f2fd" rx="4"/>
         <rect width="200" height="60" fill="#1565c0" rx="4"/>
         <text x="100" y="30" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">e.firma</text>
@@ -243,14 +206,11 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="30" y="185" width="140" height="50" fill="#1565c0" opacity="0.1" rx="4"/>
         <text x="100" y="205" textAnchor="middle" fill="#1565c0" fontSize="10" fontWeight="bold" opacity="0.6">CERTIFICADO DIGITAL</text>
         <text x="100" y="220" textAnchor="middle" fill="#333" fontSize="9" opacity="0.5">FIEL AUTORIZADA</text>
-      </svg>
-    ),
-
-    // =====================================
+      </svg>),
+  // =====================================
     // CORRECCIONES - Sección de Correcciones (5 tipos)
     // =====================================
-    'correccion-curp': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+    'correccion-curp': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#fff8e1" rx="4"/>
         <rect width="200" height="55" fill="#f57c00" rx="4"/>
         <text x="100" y="22" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">CORRECCIÓN</text>
@@ -267,11 +227,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="175" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <rect x="30" y="205" width="140" height="30" fill="#f57c00" opacity="0.1" rx="4"/>
         <text x="100" y="225" textAnchor="middle" fill="#333" fontSize="11" fontWeight="bold">ACTUALIZACIÓN</text>
-      </svg>
-    ),
-
-    'correccion-extemporaneas': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'correccion-extemporaneas': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#fce4ec" rx="4"/>
         <rect width="200" height="55" fill="#ad1457" rx="4"/>
         <text x="100" y="20" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">CORRECCIÓN</text>
@@ -290,11 +247,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="180" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <rect x="30" y="210" width="140" height="25" fill="#ad1457" opacity="0.1" rx="4"/>
         <text x="100" y="228" textAnchor="middle" fill="#333" fontSize="10" fontWeight="bold">REGISTRO TARDÍO</text>
-      </svg>
-    ),
-
-    'correccion-matrimonio': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'correccion-matrimonio': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#fff8f0" rx="4"/>
         <rect width="200" height="55" fill="#f57c00" rx="4"/>
         <text x="100" y="20" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">CORRECCIÓN</text>
@@ -315,11 +269,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="180" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <path d="M 40 220 Q 60 215, 80 220" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
         <path d="M 120 220 Q 140 215, 160 220" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
-      </svg>
-    ),
-
-    'correccion-defuncion': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'correccion-defuncion': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#f5f5f5" rx="4"/>
         <rect width="200" height="55" fill="#f57c00" rx="4"/>
         <text x="100" y="20" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">CORRECCIÓN</text>
@@ -340,11 +291,8 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="185" width="160" height="8" fill="#333" opacity="0.15" rx="2"/>
         <rect x="20" y="200" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <path d="M 40 230 Q 60 225, 80 230 T 120 230" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
-      </svg>
-    ),
-
-    'correccion-nacimiento': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'correccion-nacimiento': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#f0f0f0" rx="4"/>
         <rect width="200" height="55" fill="#f57c00" rx="4"/>
         <text x="100" y="20" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">CORRECCIÓN</text>
@@ -363,14 +311,11 @@ const DocumentSVG = ({ type, name }) => {
         <rect x="20" y="185" width="160" height="8" fill="#333" opacity="0.15" rx="2"/>
         <rect x="20" y="200" width="140" height="8" fill="#333" opacity="0.15" rx="2"/>
         <path d="M 40 230 Q 60 225, 80 230 T 120 230" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
-      </svg>
-    ),
-
+      </svg>),
+  // =====================================
+    // EXTRANJEROS - Sección de Naturalizaciones 
     // =====================================
-    // EXTRANJEROS - Sección de Naturalizaciones (2 diseños nuevos)
-    // =====================================
-    'carta-naturalizacion': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+    'carta-naturalizacion': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#e8f5e9" rx="4"/>
         <rect width="200" height="60" fill="#2e7d32" rx="4"/>
         <text x="100" y="25" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">CARTA DE</text>
@@ -394,11 +339,8 @@ const DocumentSVG = ({ type, name }) => {
         {/* Firma */}
         <path d="M 40 235 Q 60 230, 80 235 T 120 235" stroke="#333" strokeWidth="2" fill="none" opacity="0.3"/>
         <rect x="40" y="238" width="70" height="1" fill="#333" opacity="0.2"/>
-      </svg>
-    ),
-
-    'naturalizaciones-mexicanas': (
-      <svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      </svg>),
+  'naturalizaciones-mexicanas': (props) => (<svg className="w-full h-full object-contain drop-shadow-2xl opacity-40 group-hover:opacity-90 transition-all duration-700 rotate-[-8deg] group-hover:rotate-0" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" {...props}>
         <rect width="200" height="260" fill="#fff3e0" rx="4"/>
         <rect width="200" height="60" fill="#388e3c" rx="4"/>
         <text x="100" y="22" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">NATURALIZACIÓN</text>
@@ -421,68 +363,103 @@ const DocumentSVG = ({ type, name }) => {
         
         <rect x="30" y="210" width="140" height="30" fill="#388e3c" opacity="0.1" rx="4"/>
         <text x="100" y="230" textAnchor="middle" fill="#333" fontSize="11" fontWeight="bold">CIUDADANÍA MEXICANA</text>
-      </svg>
-    )
-  };
-
-  return documents[type] || documents['acta-nacimiento'];
+      </svg>),
 };
 
-// ========================================
-// COMPONENTE PRINCIPAL: SERVICE CARD
-// ========================================
-export default function ServiceCard({ 
-  name, 
-  price, 
-  deliveryTime, 
-  documentType = 'acta-nacimiento',
-  backgroundColor = '#1a1a2e',
-  heightClass = "h-72"
+
+const DocumentSVG = React.memo(function DocumentSVG({ type, name }) {
+  const Svg = React.useMemo(
+    () => DOCUMENTS[type] ?? DOCUMENTS["acta-nacimiento"],
+    [type]
+  );
+  return <Svg aria-label={name} />;
+});
+
+function useInView(ref, { rootMargin = "0px", threshold = 0.1 } = {}) {
+  const [inView, setInView] = React.useState(false);
+  React.useEffect(() => {
+    if (!ref.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin, threshold }
+    );
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [ref, rootMargin, threshold]);
+  return inView;
+}
+
+function ServiceCard({
+  name,
+  price,
+  deliveryTime,
+  documentType = "acta-nacimiento",
+  type,
+  backgroundColor = "#1a1a2e",
+  heightClass = "h-72",
+  description,
+  onClick,
+  className,
 }) {
+  const resolvedType = type ?? documentType ?? "acta-nacimiento";
+  const cardRef = React.useRef(null);
+  const inView = useInView(cardRef);
+
   return (
-    <div className={`group relative ${heightClass} overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-teal-500/20`}>
-      {/* Background Base */}
+    <div
+      ref={cardRef}
+      className={clsx(
+        `group relative ${heightClass} overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-teal-500/20`,
+        className
+      )}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+    >
       <div className="absolute inset-0" style={{ backgroundColor }} />
 
-      {/* Documento SVG Animado */}
       <div className="absolute inset-0 overflow-visible">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-48 h-64 transition-all duration-700 ease-out group-hover:scale-150 group-hover:blur-none blur-sm animate-float">
-            <DocumentSVG type={documentType} name={name} />
+          <div
+            className={clsx(
+              "relative w-48 h-64 transition-all duration-700 ease-out group-hover:scale-150 group-hover:blur-none blur-sm",
+              inView ? "animate-float" : "",
+              "motion-reduce:animate-none"
+            )}
+          >
+            <DocumentSVG type={resolvedType} name={name} />
             <div className="absolute inset-0 bg-teal-400/20 blur-3xl scale-75 group-hover:scale-100 transition-all duration-700 -z-10 opacity-50 group-hover:opacity-70" />
           </div>
         </div>
       </div>
-     
-      {/* Overlay Gradiente */}
+
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 group-hover:from-black/70 group-hover:via-black/30 transition-all duration-500 pointer-events-none" />
-      
-      {/* Línea Superior Decorativa */}
+
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-teal-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      {/* Botón Flecha */}
+
       <div className="absolute top-4 right-4 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-500 z-10">
         <ArrowRight className="w-5 h-5 text-white" strokeWidth={2.5} />
       </div>
-     
-      {/* Contenido de Texto */}
+
       <div className="relative h-full flex flex-col justify-end p-6 z-10">
-        {/* Línea Decorativa */}
         <div className="w-12 h-0.5 bg-teal-400 mb-3 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
-        
-        {/* Título del Servicio */}
+
         <h3 className="text-white text-2xl font-semibold tracking-wide uppercase mb-3 transform group-hover:translate-x-1 transition-transform duration-300 drop-shadow-lg">
           {name}
         </h3>
-       
-        {/* Información de Precio y Tiempo */}
-        <div className="flex items-center gap-6">
+
+        {description ? (
+          <p className="text-white/80 text-sm mb-3 line-clamp-2">{description}</p>
+        ) : null}
+
+        <div className="flex items-center gap-6 flex-wrap">
           {price && (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 transform group-hover:bg-white/20 transition-all duration-300">
               <DollarSign className="w-4 h-4 text-teal-400" strokeWidth={2.5} />
               <span className="text-white text-sm font-bold">${price}</span>
             </div>
           )}
+
           {deliveryTime && (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 transform group-hover:bg-white/20 transition-all duration-300">
               <Clock className="w-4 h-4 text-teal-400" strokeWidth={2.5} />
@@ -490,8 +467,7 @@ export default function ServiceCard({
             </div>
           )}
         </div>
-        
-        {/* Link "Ver Detalles" */}
+
         <div className="mt-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
           <span className="inline-flex items-center gap-2 text-teal-400 text-sm font-semibold">
             Ver detalles
@@ -499,10 +475,11 @@ export default function ServiceCard({
           </span>
         </div>
       </div>
-      
-      {/* Esquinas Decorativas */}
+
       <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
       <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
     </div>
   );
 }
+
+export default React.memo(ServiceCard);
