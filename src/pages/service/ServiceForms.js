@@ -94,9 +94,12 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
     );
   }
 
+  const inputs = [];
+
   if (camposFormulario && camposFormulario.includes('curp')) {
-    return (
+    inputs.push(
       <InputField 
+        key="curp"
         type="curp"
         label="CURP"
         placeholder="ABCD123456HDFMNN09"
@@ -112,8 +115,9 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
   }
 
   if (camposFormulario && camposFormulario.includes('rfc')) {
-    return (
+    inputs.push(
       <InputField 
+        key="rfc"
         type="rfc"
         label="RFC"
         placeholder="ABC123456XYZ"
@@ -129,8 +133,9 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
   }
 
   if (camposFormulario && camposFormulario.includes('idcif')) {
-    return (
+    inputs.push(
       <InputField 
+        key="idcif"
         type="idcif"
         label="IdCIF"
         placeholder="A1B2C3D4E5"
@@ -145,5 +150,9 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
     );
   }
 
-  return null;
+  if (inputs.length === 0) {
+    return null;
+  }
+
+  return <div className="space-y-6">{inputs}</div>;
 }

@@ -19,7 +19,7 @@ export default function RFCPage() {
       documentType: 'rfc-primera-vez',
       backgroundColor: '#475569',
       heightClass: "h-96",
-      path: '/rfc/rfc-primera-vez'
+      path: '/servicio/rfc-primera-vez'
     },
     {
       id: 2,
