@@ -19,7 +19,7 @@ export default function CURPPage() {
       documentType: 'curp-unificacion',
       backgroundColor: '#475569', // <-- CAMBIO (Color de RFCPage)
       heightClass: "h-96",
-      path: '/curp/unificacion'
+      path: '/servicio/unificacion-curp'
     },
     {
       id: 2,
@@ -28,7 +28,7 @@ export default function CURPPage() {
       deliveryTime: '24 hrs',
       documentType: 'curp-baja',
       backgroundColor: '#64748b', // <-- CAMBIO (Color de RFCPage)
-      path: '/curp/baja'
+      path: '/servicio/baja-curp'
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ export default function CURPPage() {
       deliveryTime: '24-48 hrs',
       documentType: 'curp-alta',
       backgroundColor: '#334155', // <-- CAMBIO (Color de RFCPage)
-      path: '/curp/alta'
+      path: '/servicio/alta-curp'
     },
     {
       id: 4,
@@ -46,7 +46,7 @@ export default function CURPPage() {
       deliveryTime: '20 min',
       documentType: 'curp-descargar',
       backgroundColor: '#1e293b', // <-- CAMBIO (Color de RFCPage)
-      path: '/curp/descargar'
+      path: '/servicio/descargar-curp'
     },
     {
       id: 5,
@@ -55,7 +55,7 @@ export default function CURPPage() {
       deliveryTime: '48-72 hrs',
       documentType: 'curp-certificacion',
       backgroundColor: '#0f172a', // <-- CAMBIO (Color de RFCPage)
-      path: '/curp/certificacion'
+      path: '/servicio/certificacion-curp'
     }
   ];
 

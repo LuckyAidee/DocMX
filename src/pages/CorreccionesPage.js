@@ -19,7 +19,7 @@ export default function CorreccionesPage() {
       documentType: 'correccion-curp',
       backgroundColor: '#475569',
       heightClass: "h-96",
-      path: '/correcciones/curp'
+      path: '/servicio/correccion-curp'
     },
     {
       id: 2,
@@ -28,7 +28,7 @@ export default function CorreccionesPage() {
       deliveryTime: '3-5 días',
       documentType: 'correccion-extemporaneas',
       backgroundColor: '#64748b',
-      path: '/correcciones/extemporaneas'
+      path: '/servicio/correccion-actas-extemporaneas'
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ export default function CorreccionesPage() {
       deliveryTime: '48-72 hrs',
       documentType: 'correccion-matrimonio',
       backgroundColor: '#334155',
-      path: '/correcciones/matrimonio'
+      path: '/servicio/correccion-acta-matrimonio'
     },
     {
       id: 4,
@@ -46,7 +46,7 @@ export default function CorreccionesPage() {
       deliveryTime: '48-72 hrs',
       documentType: 'correccion-defuncion',
       backgroundColor: '#1e293b',
-      path: '/correcciones/defuncion'
+      path: '/servicio/correccion-acta-defuncion'
     },
     {
       id: 5,
@@ -55,7 +55,7 @@ export default function CorreccionesPage() {
       deliveryTime: '48 hrs',
       documentType: 'correccion-nacimiento',
       backgroundColor: '#0f172a',
-      path: '/correcciones/nacimiento'
+      path: '/servicio/correccion-acta-nacimiento'
     }
   ];
 

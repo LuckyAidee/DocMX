@@ -28,7 +28,7 @@ export default function RFCPage() {
       deliveryTime: '24 hrs',
       documentType: 'csf',
       backgroundColor: '#64748b',
-      path: '/rfc/csf-rfc'
+      path: '/servicio/constancia-fiscal-rfc'
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ export default function RFCPage() {
       deliveryTime: '24-48 hrs',
       documentType: 'csf',
       backgroundColor: '#334155',
-      path: '/rfc/csf-rfc-idcif'
+      path: '/servicio/constancia-fiscal-rfc-idcif'
     },
     {
       id: 4,
@@ -46,7 +46,7 @@ export default function RFCPage() {
       deliveryTime: '48-72 hrs',
       documentType: 'e-firma',
       backgroundColor: '#1e293b',
-      path: '/rfc/e-firma'
+      path: '/servicio/e-firma'
     },
     {
       id: 5,
@@ -55,7 +55,7 @@ export default function RFCPage() {
       deliveryTime: '24 hrs',
       documentType: 'rfc-modificaciones',
       backgroundColor: '#0f172a',
-      path: '/rfc/modificaciones'
+      path: '/servicio/modificaciones-csf'
     }
   ];
 
