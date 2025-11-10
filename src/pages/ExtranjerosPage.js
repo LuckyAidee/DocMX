@@ -62,19 +62,18 @@ export default function ExtranjerosPage() {
           {/* 4. USAR EL NUEVO HERO Y DATOS */}
           <div className="px-8 mt-1">
             <CategoryHeroExtranjeros
-              title="EXTRANJEROS"
+              title="EXTRA"
               subtitle="Trámites de ciudadanía y naturalización"
             />
           </div>
           
           {/* Fila horizontal de servicios */}
           <div className="px-8 py-10">
-            {/* 5. USAR EL NUEVO ARRAY DE SERVICIOS */}
-            <div className="flex gap-6 justify-center flex-wrap">
+            <div className="flex gap-6 justify-center">
               {extranjerosServices.map((service) => (
                 <div 
                   key={service.id} 
-                  className="flex-1 max-w-sm min-w-[280px] h-80 cursor-pointer"
+                  className="flex-1 max-w-sm h-80 cursor-pointer"
                   onClick={() => navigate(service.path)}
                 >
                   <ServiceCard

@@ -87,8 +87,8 @@ export default function CorreccionesPage() {
           {/* CategoryHeroCorrecciones - con padding horizontal */}
           <div className="px-8 mt-1">
             <CategoryHeroCorrecciones 
-              title="CORRECCION"
-              subtitle="Servicios de corrección de documentos oficiales"
+              title="CORRE"
+              subtitle="Servicios de corrección en documentos"
             />
           </div>
           

@@ -76,7 +76,7 @@ export default function ActasPage() {
           
           {/* Fila horizontal de servicios */}
           <div className="px-8 py-10">
-            <div className="flex gap-6 justify-center">
+            <div className="flex gap-6 justify-center flex-wrap">
               {actasServices.map((service) => (
                 <div 
                   key={service.id} 

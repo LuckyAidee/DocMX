@@ -2,8 +2,8 @@ import React from 'react';
 import { Clock, Shield } from 'lucide-react';
 
 export default function CategoryHeroExtranjeros({ title, subtitle }) {
-  // Forma de Trapezoide Isósceles (basado en tu imagen)
-  const trapezoideClipPath = 'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)';
+  // Forma de Triángulo Isósceles (parte superior casi un punto, como en la imagen)
+  const trapezoideClipPath = 'polygon(49% 0%, 51% 0%, 100% 100%, 0% 100%)';
 
   return (
     <div
@@ -40,8 +40,35 @@ export default function CategoryHeroExtranjeros({ title, subtitle }) {
               <div className="absolute top-8 left-12 w-1 h-1 bg-slate-400/40 rounded-full blur-[0.5px] opacity-60" style={{ animation: 'float 4s ease-in-out infinite', animationDelay: '0s' }}></div>
               <div className="absolute top-16 right-16 w-1.5 h-1.5 bg-gray-400/30 rounded-full blur-[0.5px] opacity-50" style={{ animation: 'float 5s ease-in-out infinite', animationDelay: '0.5s' }}></div>
               <div className="absolute top-1/2 left-8 w-0.5 h-3 bg-gradient-to-b from-slate-400/40 to-transparent rounded-full blur-[0.5px] opacity-40" style={{ animation: 'float 6s ease-in-out infinite, rotate 8s linear infinite', animationDelay: '1s' }}></div>
-              <div className="absolute top-20 right-24 w-1 h-1 bg-slate-300/50 rounded-full blur-[0.5px] opacity-50" style={{ animation: 'float 4.5s ease-in-out infinite', animationDelay: '1.5s' }}></div>
-              <div className="absolute bottom-20 left-16 w-0.5 h-2 bg-gradient-to-t from-gray-400/40 to-transparent rounded-full blur-[0.5px] opacity-40" style={{ animation: 'float 5.5s ease-in-out infinite, rotate 10s linear infinite reverse', animationDelay: '2s' }}></div>
+              <div className="absolute top-20 right-24 w-1 h-1 bg-slate-300/50 rounded-full blur-[0.5px] opacity-50 group-hover:opacity-100 transition-all duration-1000" style={{ animation: 'float 4.5s ease-in-out infinite', animationDelay: '1.5s' }}></div>
+              <div className="absolute bottom-20 left-16 w-0.5 h-2 bg-gradient-to-t from-gray-400/40 to-transparent rounded-full blur-[0.5px] opacity-40 group-hover:opacity-70 transition-all duration-1000" style={{ animation: 'float 5.5s ease-in-out infinite, rotate 10s linear infinite reverse', animationDelay: '2s' }}></div>
+              
+              {/* Partícula 6 - Inferior derecha */}
+              <div 
+                className="absolute bottom-16 right-12 w-1.5 h-1.5 bg-slate-400/35 rounded-full blur-[0.5px] opacity-45 group-hover:opacity-85 transition-all duration-1000"
+                style={{
+                  animation: 'float 4.8s ease-in-out infinite',
+                  animationDelay: '2.5s'
+                }}
+              ></div>
+              
+              {/* Partícula 7 - Centro superior */}
+              <div 
+                className="absolute top-6 left-1/2 -translate-x-1/2 w-1 h-1 bg-gray-300/45 rounded-full blur-[0.5px] opacity-50 group-hover:opacity-95 transition-all duration-1000"
+                style={{
+                  animation: 'float 5.2s ease-in-out infinite',
+                  animationDelay: '3s'
+                }}
+              ></div>
+              
+              {/* Partícula 8 - Derecha media */}
+              <div 
+                className="absolute top-1/2 right-6 w-0.5 h-2.5 bg-gradient-to-b from-slate-400/35 to-transparent rounded-full blur-[0.5px] opacity-35 group-hover:opacity-75 transition-all duration-1000"
+                style={{
+                  animation: 'float 6.5s ease-in-out infinite, rotate 12s linear infinite',
+                  animationDelay: '3.5s'
+                }}
+              ></div>
               
               {/* Contenedor de documentos */}
               <div className="absolute inset-0 flex items-center justify-center" style={{perspective: '1000px'}}>
