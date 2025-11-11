@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [forceCollapse, setForceCollapse] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -40,13 +41,16 @@ export default function Sidebar() {
   return (
     <div
       className={`fixed left-0 top-0 h-screen bg-gray-900 text-white transition-all duration-300 ease-in-out z-50 flex flex-col ${
-
-        isExpanded ? 'w-64' : 'w-[4.5rem]'
+        (isExpanded && !forceCollapse) ? 'w-64' : 'w-[4.5rem]'
       }`}
-      onMouseEnter={() => setIsExpanded(true)}
+      onMouseEnter={() => {
+        setForceCollapse(false);
+        setIsExpanded(true);
+      }}
       onMouseLeave={() => {
         setIsExpanded(false);
         setShowUserMenu(false);
+        setForceCollapse(false);
       }}
     >
       {/* Logo Section */}
@@ -81,7 +85,12 @@ export default function Sidebar() {
             return (
               <li key={index}>
                 <button
-                  onClick={() => navigate(item.path)}
+                  onClick={() => {
+                    setForceCollapse(true);
+                    setTimeout(() => {
+                      navigate(item.path);
+                    }, 150);
+                  }}
                   className={`w-full flex items-center py-3 rounded-lg transition-all duration-200 group relative
                     ${isExpanded ? 'justify-start px-3 gap-3' : 'justify-center px-0'}
                     ${active 

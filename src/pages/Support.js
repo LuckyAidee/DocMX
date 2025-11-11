@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Sidebar from '../components/layout/Sidebar';
-import TopBar from '../components/layout/TopBar';
+import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import { MessageCircle, Headphones, Clock, HelpCircle, ChevronDown } from 'lucide-react';
 
@@ -29,18 +28,13 @@ export default function Support() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex-1 ml-[4.5rem]">
-        {/* TopBar */}
-        <TopBar />
-
-        {/* Contenedor principal con fondo blanco */}
-        <div className="bg-white min-h-screen mt-7 px-8 py-8">
-          <div className="w-full">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white min-h-screen mt-7 px-8 py-8"
+    >
             {/* Breadcrumbs */}
             <div className="mb-0">
               <Breadcrumbs
@@ -209,9 +203,6 @@ export default function Support() {
               </div>
               {/* FIN COLUMNA DERECHA */}
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </motion.div>
   );
 }

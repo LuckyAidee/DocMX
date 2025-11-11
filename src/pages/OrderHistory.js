@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/layout/Sidebar';
-import TopBar from '../components/layout/TopBar';
+import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import { CheckCircle, Clock, XCircle, Download, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -139,33 +138,29 @@ export default function OrderHistory() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex">
-        <Sidebar />
-        <div className="flex-1 ml-[4.5rem]">
-          <TopBar />
-          <div className="bg-white min-h-screen mt-7 p-8 flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">Cargando historial de órdenes...</p>
-            </div>
-          </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white min-h-screen mt-7 p-8 flex items-center justify-center"
+      >
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando historial de órdenes...</p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex-1 ml-[4.5rem]">
-        {/* TopBar */}
-        <TopBar />
-
-        {/* Contenedor principal con fondo blanco - TODO dentro */}
-        <div className="bg-white min-h-screen mt-7 p-8">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white min-h-screen mt-7 p-8"
+    >
           {/* Breadcrumbs */}
           <div className="mb-0">
             <Breadcrumbs 
@@ -311,8 +306,6 @@ export default function OrderHistory() {
               Mostrando {filteredOrders.length} de {orders.length} órdenes totales
             </div>
           )}
-        </div>
-      </div>
-    </div>
+    </motion.div>
   );
 }
