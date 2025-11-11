@@ -11,7 +11,7 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { updateUserState } = useAuth();
 
   React.useEffect(() => {
     const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
@@ -31,17 +31,23 @@ function LoginPage() {
     try {
       console.log('🔐 Intentando login...');
       
-      const data = await apiService.login({ email, password });
-      
-      console.log('Login exitoso, token recibido');
+      const response = await apiService.login({ 
+        email, 
+        password, 
+        rememberMe 
+      });
+    
+      console.log('Login exitoso - cookies HttpOnly establecidas');
       
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
+        localStorage.setItem('rememberMe', 'true');
       } else {
         localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberMe');
       }
       
-      await login(data.access_token, data.user, rememberMe);
+      await updateUserState(response.user);
       navigate('/dashboard');
     } catch (err) {
       console.error('Error de login:', err);

@@ -1,5 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { apiService } from '../services/api';
+import { normalizeUserInput } from '../utils/sanitize';
 
 const AuthContext = createContext();
 
@@ -14,87 +15,79 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Cambiado a false
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Verificar autenticación al cargar la app
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  // ✅ ELIMINADO: useEffect que llama a checkAuth (no existe)
+  // ✅ NO hay auto-check al iniciar
 
-  const checkAuth = async () => {
-    const rememberMe = localStorage.getItem('rememberMe') === 'true';
-    const token = rememberMe 
-      ? localStorage.getItem('access_token')  // Persistente
-      : sessionStorage.getItem('access_token'); // Sesión
-
-    if (!token) {
-      setLoading(false);
-      setIsAuthenticated(false);
-      return;
-    }
-
+  const updateUserState = async (userData) => {
     try {
-      const userProfile = await apiService.getUserProfile();
-      setUser(userProfile);
+      console.log('🔐 [AuthContext] Actualizando estado con userData:', userData);
+
+      // Normalizar datos del usuario
+      const validatedUser = {
+        ...userData,
+        fullName: normalizeUserInput.text(userData.fullName || ''),
+        email: normalizeUserInput.email(userData.email || ''),
+        phoneNumber: normalizeUserInput.phone(userData.phoneNumber || ''),
+        address: normalizeUserInput.text(userData.address || '', 500)
+      };
+
+      setUser(validatedUser);
       setIsAuthenticated(true);
+      setLoading(false); // ✅ Asegurar loading en false
+
+      console.log('✅ [AuthContext] Estado actualizado exitosamente');
+      return validatedUser;
     } catch (error) {
-      console.error('Error verificando autenticación:', error);
-      // Limpiar tokens inválidos de ambos almacenamientos
-      localStorage.removeItem('access_token');
-      sessionStorage.removeItem('access_token');
-      localStorage.removeItem('rememberMe');
-      setUser(null);
-      setIsAuthenticated(false);
+      console.error('Error actualizando estado:', error);
+      setLoading(false); // ✅ Asegurar loading en false incluso en error
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      // Llamar al backend para limpiar la cookie HttpOnly
+      await apiService.logout();
+    } catch (error) {
+      console.error('Error en logout:', error);
     } finally {
-      setLoading(false);
+      // Limpiar estado local en cualquier caso
+      handleAuthFailure();
     }
   };
 
-  const login = async (token, userData, rememberMe = false) => {
-    // GUARDAR TOKEN SEGÚN "REMEMBER ME"
-    if (rememberMe) {
-      localStorage.setItem('access_token', token);
-      localStorage.setItem('rememberMe', 'true');
-      sessionStorage.removeItem('access_token'); // Limpiar sesión
-    } else {
-      sessionStorage.setItem('access_token', token);
-      localStorage.setItem('rememberMe', 'false');
-      localStorage.removeItem('access_token'); // Limpiar persistente
-    }
-    
-    if (userData) {
-      setUser(userData);
-    } else {
-      const userProfile = await apiService.getUserProfile();
-      setUser(userProfile);
-    }
-    
-    setIsAuthenticated(true);
-  };
-
-  const logout = () => {
-    // LIMPIAR AMBOS ALMACENAMIENTOS
-    localStorage.removeItem('access_token');
-    sessionStorage.removeItem('access_token');
-    localStorage.removeItem('rememberMe');
+  const handleAuthFailure = () => {
     setUser(null);
     setIsAuthenticated(false);
+    setLoading(false); // ✅ Asegurar loading en false
   };
 
   const updateUser = (updatedUserData) => {
-    setUser(prevUser => ({ ...prevUser, ...updatedUserData }));
+    // Normalizar antes de actualizar
+    const validatedData = {
+      ...updatedUserData,
+      fullName: normalizeUserInput.text(updatedUserData.fullName),
+      email: normalizeUserInput.email(updatedUserData.email),
+      phoneNumber: normalizeUserInput.phone(updatedUserData.phoneNumber),
+      address: normalizeUserInput.text(updatedUserData.address, 500),
+    };
+
+    setUser(prevUser => ({ 
+      ...prevUser, 
+      ...validatedData 
+    }));
   };
 
-  // Valor que estará disponible en todos los componentes
   const value = {
     user,
-    login,
+    updateUserState,
     logout,
     loading,
     isAuthenticated,
-    updateUser,
-    checkAuth
+    updateUser
   };
 
   return (

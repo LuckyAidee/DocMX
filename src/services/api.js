@@ -3,50 +3,72 @@ const API_URL = process.env.REACT_APP_API_URL;
 class ApiService {
   constructor() {
     this.baseURL = API_URL;
+    this.csrfToken = null;
   }
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
-    const rememberMe = localStorage.getItem('rememberMe') === 'true';
-    const token = rememberMe 
-      ? localStorage.getItem('access_token')
-      : sessionStorage.getItem('access_token');
-    
+    // Ensure we have a CSRF token when needed
+    const csrfHeader = await this.getCsrfHeaders();
+
     const config = {
+      credentials: 'include', // INCLUYE COOKIES AUTOMÁTICAMENTE
       headers: {
         'Content-Type': 'application/json',
+        ...csrfHeader,
         ...options.headers,
       },
       ...options,
     };
 
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-
     try {
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        // Si es error 401 (Unauthorized), limpiar token
+        // Manejo específico de errores de autenticación
         if (response.status === 401) {
-          localStorage.removeItem('access_token');
-          sessionStorage.removeItem('access_token');
-          localStorage.removeItem('rememberMe');
+          this.handleUnauthorized();
+          throw new Error('Sesión expirada o inválida');
         }
-        
-        const errorData = await response.json().catch(() => ({}));
+        const text = await response.text().catch(() => '');
+        let errorData = {};
+        try { errorData = text ? JSON.parse(text) : {}; } catch { errorData = { message: text }; }
         throw new Error(errorData.message || `Error ${response.status}`);
       }
 
-      return await response.json();
+      const text = await response.text();
+      if (!text) return null;
+      try { return JSON.parse(text); } catch { return text; }
     } catch (error) {
       console.error('API Error:', error);
       throw error;
     }
   }
 
-  // Auth endpoints
+  async getCsrfHeaders() {
+    if (this.csrfToken) return { 'X-CSRF-Token': this.csrfToken };
+    try {
+      const res = await fetch(`${this.baseURL}/auth/csrf`, { credentials: 'include' });
+      if (!res.ok) return {};
+      const data = await res.json().catch(() => ({}));
+      if (data && data.token) {
+        this.csrfToken = data.token;
+        return { 'X-CSRF-Token': this.csrfToken };
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  handleUnauthorized() {
+    // Redirigir al login si no estamos ya allí
+    if (!window.location.pathname.includes('/login')) {
+      window.location.href = '/';
+    }
+  }
+
+  // Auth endpoints actualizados
   async login(credentials) {
     return this.request('/auth/login', {
       method: 'POST',
@@ -54,7 +76,24 @@ class ApiService {
     });
   }
 
-  // Register endpoints
+  // Prefer backend endpoint to set rememberMe flag in a secure cookie
+  async setRememberMe(value = true) {
+    return this.request('/auth/remember', {
+      method: 'POST',
+      body: JSON.stringify({ remember: !!value })
+    });
+  }
+
+  async logout() {
+    return this.request('/auth/logout', {
+      method: 'POST',
+    });
+  }
+
+  async getUserProfile() {
+    return this.request('/auth/profile');
+  }
+
   async register(userData) {
     return this.request('/auth/register', {
       method: 'POST',
@@ -62,12 +101,7 @@ class ApiService {
     });
   }
 
-  // Documents endpoints
-  async getDocuments() {
-    return this.request('/documents');
-  }
-
-  // Orders endpoints
+  // Ejemplos adicionales de endpoints
   async createOrder(orderData) {
     return this.request('/orders', {
       method: 'POST',
@@ -77,11 +111,6 @@ class ApiService {
 
   async getUserOrders() {
     return this.request('/orders');
-  }
-
-  // User endpoints
-  async getUserProfile() {
-    return this.request('/auth/profile');
   }
 }
 

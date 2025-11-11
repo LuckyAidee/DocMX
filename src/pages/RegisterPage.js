@@ -295,7 +295,7 @@ export default function RegisterPage() {
               />
               <label htmlFor="aceptaTerminos" className="ml-2 text-sm text-gray-700">
                 Acepto los{' '}
-                <a href="#" className="text-teal-500 hover:text-teal-600 font-medium transition">
+                <a href="#" target="_blank" rel="noopener noreferrer" className="text-teal-500 hover:text-teal-600 font-medium transition">
                   términos y condiciones
                 </a>
               </label>
