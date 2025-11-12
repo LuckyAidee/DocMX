@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, FileText, CreditCard, HelpCircle, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -6,7 +6,9 @@ import { useAuth } from '../../context/AuthContext';
 export default function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [forceCollapse, setForceCollapse] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
+  const [suppressHover, setSuppressHover] = useState(false);
+  const [collapseLock, setCollapseLock] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -38,19 +40,36 @@ export default function Sidebar() {
 
   const initials = getInitials(user?.fullName);
 
+  const collapseSidebar = () => {
+    setIsExpanded(false);
+    setShowUserMenu(false);
+  };
+
+  const handleItemClick = (path) => {
+    if (path === location.pathname) return;
+    setCollapseLock(true);
+    setSuppressHover(true);
+    setHoveredItem(null);
+    collapseSidebar();
+    navigate(path);
+  };
+
+  useEffect(() => {
+    setSuppressHover(false);
+    setCollapseLock(false);
+  }, [location.pathname]);
+
   return (
     <div
       className={`fixed left-0 top-0 h-screen bg-gray-900 text-white transition-all duration-300 ease-in-out z-50 flex flex-col ${
-        (isExpanded && !forceCollapse) ? 'w-64' : 'w-[4.5rem]'
+        isExpanded ? 'w-64' : 'w-[4.5rem]'
       }`}
       onMouseEnter={() => {
-        setForceCollapse(false);
+        if (collapseLock) return;
         setIsExpanded(true);
       }}
       onMouseLeave={() => {
-        setIsExpanded(false);
-        setShowUserMenu(false);
-        setForceCollapse(false);
+        collapseSidebar();
       }}
     >
       {/* Logo Section */}
@@ -81,22 +100,26 @@ export default function Sidebar() {
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             const active = isActive(item.path);
+            const isHovered = hoveredItem === item.path && !active && !suppressHover;
+            const colorClasses = active
+              ? 'bg-teal-600/20 text-teal-400 shadow-lg shadow-teal-600/10'
+              : isHovered
+                ? 'bg-gray-800/50 text-white'
+                : 'text-gray-300';
             
             return (
               <li key={index}>
                 <button
-                  onClick={() => {
-                    setForceCollapse(true);
-                    setTimeout(() => {
-                      navigate(item.path);
-                    }, 150);
+                  onClick={() => handleItemClick(item.path)}
+                  onMouseEnter={() => {
+                    if (!suppressHover) setHoveredItem(item.path);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredItem((current) => (current === item.path ? null : current));
                   }}
                   className={`w-full flex items-center py-3 rounded-lg transition-all duration-200 group relative
                     ${isExpanded ? 'justify-start px-3 gap-3' : 'justify-center px-0'}
-                    ${active 
-                      ? 'bg-teal-600/20 text-teal-400 shadow-lg shadow-teal-600/10' 
-                      : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
-                    }
+                    ${colorClasses}
                   `}
                 >
                   {/* Indicador de página activa */}
@@ -104,9 +127,9 @@ export default function Sidebar() {
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-teal-500 rounded-r-full"></div>
                   )}
                   
-                  <Icon 
-                    className={`flex-shrink-0 transition-all duration-200 ${
-                      active ? 'w-5 h-5' : 'w-5 h-5 group-hover:scale-110'
+                  <Icon
+                    className={`flex-shrink-0 transition-all duration-200 w-5 h-5 ${
+                      isHovered && !active ? 'scale-110' : ''
                     }`}
                     strokeWidth={active ? 2.5 : 2}
                   />
