@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
@@ -21,12 +21,25 @@ import ExtranjerosPage from './pages/ExtranjerosPage';
 
 import ServiceDetail from './pages/service/ServiceDetail';
 
+// Configurar QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30000, // 30 segundos - datos se consideran frescos
+      gcTime: 5 * 60 * 1000, // 5 minutos - tiempo de caché (antes cacheTime)
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <Routes>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Router>
+          <ScrollToTop />
+          <Routes>
           {/* Rutas públicas sin Layout */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -51,6 +64,7 @@ function App() {
         </Routes>
       </Router>
     </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

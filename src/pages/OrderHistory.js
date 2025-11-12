@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import { CheckCircle, Clock, XCircle, Download, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -7,9 +8,6 @@ import { apiService } from '../services/api';
 
 export default function OrderHistory() {
   const [activeFilter, setActiveFilter] = useState('Todas');
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   useAuth();
 
   // Filtros disponibles (mapeados a los estados del backend)
@@ -30,25 +28,13 @@ export default function OrderHistory() {
     'Cancelado': 'cancelled'
   };
 
-  // Cargar órdenes al montar el componente
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const ordersData = await apiService.getUserOrders();
-      console.log('Órdenes recibidas:', ordersData);
-      setOrders(ordersData);
-    } catch (err) {
-      console.error('Error cargando órdenes:', err);
-      setError('No se pudieron cargar las órdenes. Intenta nuevamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // TanStack Query - mantiene datos anteriores mientras carga nuevos
+  const { data: orders = [], isLoading, error, refetch, isFetching } = useQuery({
+    queryKey: ['orders'],
+    queryFn: apiService.getUserOrders,
+    staleTime: 30000, // 30 segundos
+    placeholderData: (previousData) => previousData, // Mantiene datos anteriores
+  });
 
   // Filtrar órdenes según el filtro activo
   const filteredOrders = activeFilter === 'Todas' 
@@ -136,7 +122,8 @@ export default function OrderHistory() {
     // Aquí podrías navegar a una página de detalle o mostrar un modal
   };
 
-  if (loading) {
+  // Loader inicial - solo primera vez
+  if (isLoading && !orders.length) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -173,15 +160,23 @@ export default function OrderHistory() {
 
           {/* Header con título y botón de actualizar */}
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">
-              Historial de Ódenes
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-800">
+                Historial de Ódenes
+              </h1>
+              {/* Indicador de actualización en background */}
+              {isFetching && orders.length > 0 && (
+                <span className="text-xs text-teal-600 bg-teal-50 px-3 py-1 rounded-full font-medium animate-pulse">
+                  Actualizando...
+                </span>
+              )}
+            </div>
             <button
-              onClick={fetchOrders}
-              disabled={loading}
+              onClick={() => refetch()}
+              disabled={isFetching}
               className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 disabled:opacity-50 transition-colors"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
               Actualizar
             </button>
           </div>
@@ -191,7 +186,7 @@ export default function OrderHistory() {
             <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-center">
                 <XCircle className="w-5 h-5 text-red-400 mr-2" />
-                <span className="text-red-800">{error}</span>
+                <span className="text-red-800">{error.message || 'No se pudieron cargar las órdenes. Intenta nuevamente.'}</span>
               </div>
             </div>
           )}
