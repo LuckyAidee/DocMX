@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, FileText, CreditCard, HelpCircle, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -9,6 +9,9 @@ export default function Sidebar() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [suppressHover, setSuppressHover] = useState(false);
   const [collapseLock, setCollapseLock] = useState(false);
+  const pointerInsideRef = useRef(false);
+  const lastCollapseAtRef = useRef(0);
+  const AUTO_EXPAND_DELAY = 420;
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -43,6 +46,7 @@ export default function Sidebar() {
   const collapseSidebar = () => {
     setIsExpanded(false);
     setShowUserMenu(false);
+    lastCollapseAtRef.current = Date.now();
   };
 
   const handleItemClick = (path) => {
@@ -56,7 +60,14 @@ export default function Sidebar() {
 
   useEffect(() => {
     setSuppressHover(false);
-    setCollapseLock(false);
+    const timer = setTimeout(() => {
+      setCollapseLock(false);
+      if (pointerInsideRef.current) {
+        setIsExpanded(true);
+      }
+    }, AUTO_EXPAND_DELAY);
+
+    return () => clearTimeout(timer);
   }, [location.pathname]);
 
   return (
@@ -65,10 +76,12 @@ export default function Sidebar() {
         isExpanded ? 'w-64' : 'w-[4.5rem]'
       }`}
       onMouseEnter={() => {
+        pointerInsideRef.current = true;
         if (collapseLock) return;
         setIsExpanded(true);
       }}
       onMouseLeave={() => {
+        pointerInsideRef.current = false;
         collapseSidebar();
       }}
     >
