@@ -122,7 +122,7 @@ export default function OrderHistory() {
     // Aquí podrías navegar a una página de detalle o mostrar un modal
   };
 
-  // Loader inicial - solo primera vez
+  // Loader inicial - solo primera vez con SKELETON
   if (isLoading && !orders.length) {
     return (
       <motion.div
@@ -130,11 +130,84 @@ export default function OrderHistory() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-white min-h-screen mt-7 p-8 flex items-center justify-center"
+        className="bg-white min-h-screen mt-7 p-8"
       >
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando historial de órdenes...</p>
+        {/* Breadcrumbs Skeleton */}
+        <div className="mb-0">
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-12 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-center mb-6 mt-6">
+          <div className="h-9 w-64 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-10 w-32 bg-gray-200 rounded-lg animate-pulse"></div>
+        </div>
+
+        {/* Filtros Skeleton */}
+        <div className="flex gap-3 mb-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-10 w-24 bg-gray-200 rounded-lg animate-pulse"></div>
+          ))}
+        </div>
+
+        {/* Tabla Skeleton */}
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          {/* Header de tabla */}
+          <div className="bg-gray-50 border-b border-gray-200">
+            <div className="flex">
+              <div className="flex-1 py-3 px-4">
+                <div className="h-4 w-20 bg-gray-300 rounded animate-pulse"></div>
+              </div>
+              <div className="flex-1 py-3 px-4">
+                <div className="h-4 w-16 bg-gray-300 rounded animate-pulse"></div>
+              </div>
+              <div className="flex-1 py-3 px-4">
+                <div className="h-4 w-12 bg-gray-300 rounded animate-pulse"></div>
+              </div>
+              <div className="flex-1 py-3 px-4">
+                <div className="h-4 w-16 bg-gray-300 rounded animate-pulse"></div>
+              </div>
+              <div className="flex-1 py-3 px-4">
+                <div className="h-4 w-12 bg-gray-300 rounded animate-pulse"></div>
+              </div>
+              <div className="flex-1 py-3 px-4">
+                <div className="h-4 w-14 bg-gray-300 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Filas de tabla skeleton */}
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className="border-b border-gray-100">
+              <div className="flex">
+                <div className="flex-1 py-3 px-4">
+                  <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+                <div className="flex-1 py-3 px-4">
+                  <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+                <div className="flex-1 py-3 px-4">
+                  <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+                <div className="flex-1 py-3 px-4">
+                  <div className="h-6 w-28 bg-gray-200 rounded-md animate-pulse"></div>
+                </div>
+                <div className="flex-1 py-3 px-4">
+                  <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+                <div className="flex-1 py-3 px-4">
+                  <div className="flex gap-2">
+                    <div className="h-7 w-24 bg-gray-200 rounded-lg animate-pulse"></div>
+                    <div className="h-7 w-16 bg-gray-200 rounded-lg animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </motion.div>
     );
