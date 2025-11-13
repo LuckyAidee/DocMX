@@ -8,6 +8,8 @@ import { useAuth } from '../../context/AuthContext';
 import { apiService } from '../../services/api';
 
 export default function ActaNacimientoDetail() {
+
+
   const navigate = useNavigate();
   const { user, updateUser } = useAuth(); // ✅ Agregamos updateUser para actualizar el balance
   const [curp, setCurp] = useState('');
@@ -24,58 +26,63 @@ export default function ActaNacimientoDetail() {
   };
 
   const handlePurchase = async () => {
-    // Validaciones
-    if (!curp.trim()) {
-      setError('Por favor ingresa tu CURP');
-      return;
-    }
-    if (curp.length !== 18) {
-      setError('El CURP debe tener 18 caracteres');
+    if (!user) {
+      setError('Error: No se encontró información del usuario. Inicia sesión nuevamente.');
       return;
     }
 
-    // ✅ Verificar saldo suficiente
     if (user.balance < serviceData.price) {
-      setError('Saldo insuficiente. Por favor recarga tu cuenta.');
+      setError('Saldo insuficiente para realizar la compra.');
       return;
     }
-
-    setError('');
-    setIsLoading(true);
 
     try {
-      console.log('🔄 Creando orden de Acta de Nacimiento...');
-      
-      // ✅ Crear la orden en el backend
+      setIsLoading(true);
+      setError('');
+
+      // 🧾 Crear la orden
       const orderData = {
-        documentType: serviceData.documentType,
-        pricePaid: serviceData.price,
-        details: {
-          curp: curp.toUpperCase(),
-          service: serviceData.name,
-          deliveryTime: serviceData.deliveryTime,
-          requestedAt: new Date().toISOString()
-        }
+        userId: user._id,
+        serviceId: serviceData._id,
+        amount: serviceData.price,
+        serviceName: serviceData.name,
       };
 
-      const response = await apiService.createOrder(orderData);
-      console.log('✅ Orden creada exitosamente:', response);
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
 
-      // ✅ Actualizar el balance del usuario en el contexto
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || 'Error al procesar la orden.');
+
+      // 💰 Calcular nuevo balance
       const newBalance = user.balance - serviceData.price;
-      updateUser({ balance: newBalance });
 
-      // ✅ Mostrar modal de éxito
-      setShowSuccessModal(true);
+      // 🔄 Actualizar en el backend también
+      const userResponse = await fetch(`/api/users/${user._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ balance: newBalance }),
+      });
 
-    } catch (err) {
-      console.error('❌ Error creando orden:', err);
-      setError(err.message || 'Error al procesar la compra. Intenta nuevamente.');
+      const updatedUser = await userResponse.json();
+      if (!userResponse.ok) throw new Error('Error al actualizar el saldo en el servidor');
+
+      // ✅ Actualizar contexto global con los datos actualizados del backend
+      updateUser(updatedUser);
+
+      alert('Orden creada correctamente 🎉');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('❌ Error en handlePurchase:', error);
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   const handleContinue = () => {
     setShowSuccessModal(false);
     navigate('/dashboard/orders');

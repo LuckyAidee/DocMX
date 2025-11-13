@@ -60,6 +60,11 @@ function App() {
             <Route path="/correcciones" element={<CorreccionesPage />} />
             <Route path="/extranjeros" element={<ExtranjerosPage />} />
             <Route path="/servicio/:serviceId" element={<ServiceDetail />} />
+            <Route path="/servicio/:serviceId" element={
+              <ProtectedRoute>
+                <ServiceDetail />
+              </ProtectedRoute>
+            } />
           </Route>
         </Routes>
       </Router>

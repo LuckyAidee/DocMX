@@ -91,8 +91,21 @@ export default function ServiceDetail() {
 
       const response = await apiService.createOrder(orderData);
 
-      const newBalance = user.balance - servicio.precio;
-      updateUser({ balance: newBalance });
+      try {
+        const userResponse = await fetch(`/api/users/${user._id}`); // Ajusta esta ruta si es necesario
+        if (userResponse.ok) {
+          const updatedUser = await userResponse.json();
+          updateUser(updatedUser);
+          console.log('✅ Usuario actualizado correctamente:', updatedUser);
+        } else {
+          throw new Error('Error en respuesta del servidor');
+        }
+      } catch (userError) {
+        console.error('❌ Error al actualizar usuario:', userError);
+        // Fallback: actualizar solo el balance localmente
+        const newBalance = user.balance - servicio.precio;
+        updateUser({ ...user, balance: newBalance });
+      }
 
       setShowSuccessModal(true);
 

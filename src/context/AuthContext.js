@@ -18,8 +18,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false); // Cambiado a false
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // ✅ ELIMINADO: useEffect que llama a checkAuth (no existe)
-  // ✅ NO hay auto-check al iniciar
 
   const updateUserState = async (userData) => {
     try {
@@ -36,13 +34,13 @@ export const AuthProvider = ({ children }) => {
 
       setUser(validatedUser);
       setIsAuthenticated(true);
-      setLoading(false); // ✅ Asegurar loading en false
+      setLoading(false);
 
-      console.log('✅ [AuthContext] Estado actualizado exitosamente');
+      console.log('[AuthContext] Estado actualizado exitosamente');
       return validatedUser;
     } catch (error) {
       console.error('Error actualizando estado:', error);
-      setLoading(false); // ✅ Asegurar loading en false incluso en error
+      setLoading(false);
       throw error;
     }
   };
@@ -62,24 +60,29 @@ export const AuthProvider = ({ children }) => {
   const handleAuthFailure = () => {
     setUser(null);
     setIsAuthenticated(false);
-    setLoading(false); // ✅ Asegurar loading en false
+    setLoading(false);
   };
 
   const updateUser = (updatedUserData) => {
-    // Normalizar antes de actualizar
+  console.log('🔄 [AuthContext] updateUser llamado con:', updatedUserData);
+  
+  // Si updatedUserData es el objeto completo del usuario, REEMPLAZAR completamente
+  if (updatedUserData && typeof updatedUserData === 'object') {
+    // Normalizar los datos recibidos
     const validatedData = {
       ...updatedUserData,
-      fullName: normalizeUserInput.text(updatedUserData.fullName),
-      email: normalizeUserInput.email(updatedUserData.email),
-      phoneNumber: normalizeUserInput.phone(updatedUserData.phoneNumber),
-      address: normalizeUserInput.text(updatedUserData.address, 500),
+      fullName: normalizeUserInput.text(updatedUserData.fullName || ''),
+      email: normalizeUserInput.email(updatedUserData.email || ''),
+      phoneNumber: normalizeUserInput.phone(updatedUserData.phoneNumber || ''),
+      address: normalizeUserInput.text(updatedUserData.address || '', 500),
     };
 
-    setUser(prevUser => ({ 
-      ...prevUser, 
-      ...validatedData 
-    }));
-  };
+    console.log('✅ [AuthContext] Reemplazando usuario completo con:', validatedData);
+    setUser(validatedData); // ← REEMPLAZAR completamente, no merge
+  } else {
+    console.warn('⚠️ [AuthContext] updateUser recibió datos inválidos:', updatedUserData);
+  }
+};
 
   const value = {
     user,
