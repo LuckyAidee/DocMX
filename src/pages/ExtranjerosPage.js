@@ -1,10 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/layout/Sidebar';
-import TopBar from '../components/layout/TopBar';
-import SearchBar from '../components/layout/SearchBar';
+import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
-// 1. IMPORTAR EL NUEVO HERO
 import CategoryHeroExtranjeros from '../components/shared/CategoryHeroExtranjeros';
 import ServiceCard from '../components/shared/ServiceCard';
 
@@ -34,20 +31,13 @@ export default function ExtranjerosPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <Sidebar />
-      
-      {/* Main Content Area */}
-      <div className="flex-1 ml-[4.5rem]">
-        {/* TopBar - h-16 (64px) */}
-        <TopBar />
-        
-        {/* SearchBar - h-14 (56px) */}
-        <SearchBar />
-        
-        {/* Contenedor principal con fondo blanco */}
-        <div className="bg-white min-h-screen mt-[120px]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white min-h-screen mt-[120px]"
+    >
           {/* Breadcrumbs */}
           <div className="px-12 pt-4 pb-1">
             <Breadcrumbs 
@@ -87,8 +77,6 @@ export default function ExtranjerosPage() {
               ))}
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+    </motion.div>
   );
 }

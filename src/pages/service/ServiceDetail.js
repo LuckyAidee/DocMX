@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Sidebar from '../../components/layout/Sidebar';
-import TopBar from '../../components/layout/TopBar';
+import { motion } from 'framer-motion';
 import Breadcrumbs from '../../components/shared/Breadcrumbs';
 import { Clock, DollarSign, FileText, ShoppingCart, Shield, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -135,12 +134,13 @@ export default function ServiceDetail() {
   const rgb = hexToRgb(servicio.colorAccent);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      <Sidebar />
-      <div className="flex-1 ml-[4.5rem]">
-        <TopBar />
-
-        <div className="bg-white min-h-screen mt-[60px]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white min-h-screen mt-16"
+    >
           <div className="px-8 pt-0 pb-1">
             <Breadcrumbs items={servicio.breadcrumbs} />
           </div>
@@ -435,9 +435,6 @@ export default function ServiceDetail() {
 
             </div>
           </div>
-        </div>
-      </div>
-
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-fadeIn">
           <div 
@@ -519,6 +516,6 @@ export default function ServiceDetail() {
           `}</style>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
