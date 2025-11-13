@@ -29,11 +29,16 @@ export default function OrderHistory() {
   };
 
   // TanStack Query - mantiene datos anteriores mientras carga nuevos
-  const { data: orders = [], isLoading, error, refetch, isFetching } = useQuery({
+  const { 
+    data: orders = [], 
+    isLoading, 
+    error,
+    refetch, 
+    isFetching 
+  } = useQuery({
     queryKey: ['orders'],
-    queryFn: apiService.getUserOrders,
-    staleTime: 30000, // 30 segundos
-    placeholderData: (previousData) => previousData, // Mantiene datos anteriores
+    queryFn: () => apiService.getUserOrders(),
+    staleTime: 30000,
   });
 
   // Filtrar órdenes según el filtro activo

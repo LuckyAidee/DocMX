@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiService } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -100,11 +98,10 @@ export default function RegisterPage() {
       });
 
       console.log('Registro exitoso:', response);
-      await login(response.access_token, response.user);
       
       // Mostrar mensaje de éxito y redirigir al login
-      alert('¡Cuenta creada exitosamente!\n\nPuedes iniciar sesión ahora.');
-      navigate('/dashboard');
+      alert(`¡Cuenta creada exitosamente!\n\nBienvenido ${response.user.fullName}.\nAhora puedes iniciar sesión con tus credenciales.`);
+      navigate('/');
     } catch (error) {
       console.error('Error en registro:', error);
       

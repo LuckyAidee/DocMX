@@ -1,8 +1,8 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_URL = process.env.REACT_APP_API_URL;
 
 class ApiService {
   constructor() {
-    this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+    this.baseURL = process.env.REACT_APP_API_URL;
     console.log('🔗 API Service configurado con URL:', this.baseURL);
     this.csrfToken = null;
   }
