@@ -1,0 +1,412 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Transiciones - DocMX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f9fafb;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .demo-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 2px solid #e5e7eb;
+        }
+
+        .demo-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .demo-description {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .preview-area {
+            height: 300px;
+            background: #334155;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .page {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            opacity: 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #14b8a6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #0d9488;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            color: #34d399;
+        }
+
+        .recommended {
+            border-color: #14b8a6;
+            border-width: 3px;
+            position: relative;
+        }
+
+        .recommended::before {
+            content: "RECOMENDADA";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #14b8a6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .current {
+            border-color: #fbbf24;
+            border-width: 3px;
+            position: relative;
+        }
+
+        .current::before {
+            content: "ACTUAL";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeSlideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        @keyframes fadeSimple {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeSimpleOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes fadeScale {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeScaleOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+        }
+
+        @keyframes fadeBlur {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeBlurOut {
+            from {
+                opacity: 1;
+                filter: blur(0px);
+            }
+            to {
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ComparaciÃ³n de Transiciones - DocMX</h1>
+        <p class="subtitle">Haz clic en "Ver TransiciÃ³n" para probar cada animaciÃ³n</p>
+
+        <div class="grid">
+            <div class="demo-box recommended">
+                <div class="demo-title">OpciÃ³n 1: Fade + Slide Sutil</div>
+                <div class="demo-description">
+                    Profesional y elegante. Movimiento horizontal suave + desvanecimiento. Ideal para B2B como NuORDER.
+                </div>
+                <div class="preview-area" id="preview1">
+                    <div class="page" id="page1a">PÃ¡gina A</div>
+                    <div class="page" id="page1b">PÃ¡gina B</div>
+                </div>
+                <button onclick="demo1()">Ver TransiciÃ³n</button>
+                <div class="code-block">
+initial={{ opacity: 0, <span class="highlight">x: 20</span> }}
+animate={{ opacity: 1, <span class="highlight">x: 0</span> }}
+exit={{ opacity: 0, <span class="highlight">x: -20</span> }}
+transition={{ duration: <span class="highlight">0.3</span> }}
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <div class="demo-title">OpciÃ³n 2: Fade Simple</div>
+                <div class="demo-description">
+                    MÃ¡xima sutileza. Solo desvanecimiento puro. Perfecta para transacciones B2B donde el contenido es rey.
+                </div>
+                <div class="preview-area" id="preview2">
+                    <div class="page" id="page2a">PÃ¡gina A</div>
+                    <div class="page" id="page2b">PÃ¡gina B</div>
+                </div>
+                <button onclick="demo2()">Ver TransiciÃ³n</button>
+                <div class="code-block">
+initial={{ <span class="highlight">opacity: 0</span> }}
+animate={{ <span class="highlight">opacity: 1</span> }}
+exit={{ <span class="highlight">opacity: 0</span> }}
+transition={{ duration: <span class="highlight">0.25</span> }}
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <div class="demo-title">OpciÃ³n 3: Scale + Fade</div>
+                <div class="demo-description">
+                    Moderno y profesional. Escalado sutil + desvanecimiento. Da sensaciÃ³n de profundidad sin ser exagerado.
+                </div>
+                <div class="preview-area" id="preview3">
+                    <div class="page" id="page3a">PÃ¡gina A</div>
+                    <div class="page" id="page3b">PÃ¡gina B</div>
+                </div>
+                <button onclick="demo3()">Ver TransiciÃ³n</button>
+                <div class="code-block">
+initial={{ opacity: 0, <span class="highlight">scale: 0.98</span> }}
+animate={{ opacity: 1, <span class="highlight">scale: 1</span> }}
+exit={{ opacity: 0, <span class="highlight">scale: 0.98</span> }}
+transition={{ duration: <span class="highlight">0.3</span> }}
+                </div>
+            </div>
+
+            <div class="demo-box current">
+                <div class="demo-title">Actual: Fade + Blur</div>
+                <div class="demo-description">
+                    Tu animaciÃ³n actual. Desvanecimiento con blur al salir. DramÃ¡tica pero puede ser distractora.
+                </div>
+                <div class="preview-area" id="preview4">
+                    <div class="page" id="page4a">PÃ¡gina A</div>
+                    <div class="page" id="page4b">PÃ¡gina B</div>
+                </div>
+                <button onclick="demo4()">Ver TransiciÃ³n</button>
+                <div class="code-block">
+initial={{ <span class="highlight">opacity: 0</span> }}
+animate={{ <span class="highlight">opacity: 1</span> }}
+exit={{ opacity: 0, <span class="highlight">filter: "blur(10px)"</span> }}
+transition={{ duration: <span class="highlight">0.5</span> }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let current1 = 'a', current2 = 'a', current3 = 'a', current4 = 'a';
+        let isAnimating1 = false, isAnimating2 = false, isAnimating3 = false, isAnimating4 = false;
+
+        function demo1() {
+            if (isAnimating1) return;
+            isAnimating1 = true;
+            const next = current1 === 'a' ? 'b' : 'a';
+            const exitPage = document.getElementById(`page1${current1}`);
+            const enterPage = document.getElementById(`page1${next}`);
+            exitPage.style.animation = 'fadeSlideOut 0.3s ease-in-out forwards';
+            setTimeout(() => {
+                exitPage.style.opacity = '0';
+                exitPage.style.animation = '';
+                enterPage.style.animation = 'fadeSlide 0.3s ease-in-out forwards';
+                setTimeout(() => {
+                    enterPage.style.opacity = '1';
+                    enterPage.style.animation = '';
+                    current1 = next;
+                    isAnimating1 = false;
+                }, 300);
+            }, 300);
+        }
+
+        function demo2() {
+            if (isAnimating2) return;
+            isAnimating2 = true;
+            const next = current2 === 'a' ? 'b' : 'a';
+            const exitPage = document.getElementById(`page2${current2}`);
+            const enterPage = document.getElementById(`page2${next}`);
+            exitPage.style.animation = 'fadeSimpleOut 0.25s ease forwards';
+            setTimeout(() => {
+                exitPage.style.opacity = '0';
+                exitPage.style.animation = '';
+                enterPage.style.animation = 'fadeSimple 0.25s ease forwards';
+                setTimeout(() => {
+                    enterPage.style.opacity = '1';
+                    enterPage.style.animation = '';
+                    current2 = next;
+                    isAnimating2 = false;
+                }, 250);
+            }, 250);
+        }
+
+        function demo3() {
+            if (isAnimating3) return;
+            isAnimating3 = true;
+            const next = current3 === 'a' ? 'b' : 'a';
+            const exitPage = document.getElementById(`page3${current3}`);
+            const enterPage = document.getElementById(`page3${next}`);
+            exitPage.style.animation = 'fadeScaleOut 0.3s ease-out forwards';
+            setTimeout(() => {
+                exitPage.style.opacity = '0';
+                exitPage.style.animation = '';
+                enterPage.style.animation = 'fadeScale 0.3s ease-out forwards';
+                setTimeout(() => {
+                    enterPage.style.opacity = '1';
+                    enterPage.style.animation = '';
+                    current3 = next;
+                    isAnimating3 = false;
+                }, 300);
+            }, 300);
+        }
+
+        function demo4() {
+            if (isAnimating4) return;
+            isAnimating4 = true;
+            const next = current4 === 'a' ? 'b' : 'a';
+            const exitPage = document.getElementById(`page4${current4}`);
+            const enterPage = document.getElementById(`page4${next}`);
+            exitPage.style.animation = 'fadeBlurOut 0.5s ease forwards';
+            setTimeout(() => {
+                exitPage.style.opacity = '0';
+                exitPage.style.filter = '';
+                exitPage.style.animation = '';
+                enterPage.style.animation = 'fadeBlur 0.5s ease forwards';
+                setTimeout(() => {
+                    enterPage.style.opacity = '1';
+                    enterPage.style.animation = '';
+                    current4 = next;
+                    isAnimating4 = false;
+                }, 500);
+            }, 500);
+        }
+
+        document.getElementById('page1a').style.opacity = '1';
+        document.getElementById('page2a').style.opacity = '1';
+        document.getElementById('page3a').style.opacity = '1';
+        document.getElementById('page4a').style.opacity = '1';
+    </script>
+</body>
+</html>

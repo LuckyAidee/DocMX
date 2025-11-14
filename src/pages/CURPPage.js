@@ -59,9 +59,9 @@ export default function CURPPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.3 }}
       className="bg-white min-h-screen mt-[120px]"
     >
