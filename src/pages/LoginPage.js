@@ -29,16 +29,12 @@ function LoginPage() {
     setError('');
 
     try {
-      console.log('🔐 Intentando login...');
-      
       const response = await apiService.login({ 
         email, 
         password, 
         rememberMe 
       });
     
-      console.log('Login exitoso - cookies HttpOnly establecidas');
-      
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
         localStorage.setItem('rememberMe', 'true');
@@ -50,7 +46,9 @@ function LoginPage() {
       await updateUserState(response.user);
       navigate('/dashboard');
     } catch (err) {
-      console.error('Error de login:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error de login:', err);
+      }
       setError(err.message || 'Credenciales incorrectas. Por favor, verifica tus datos.');
     } finally {
       setIsLoading(false);

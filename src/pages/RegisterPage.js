@@ -86,9 +86,6 @@ export default function RegisterPage() {
     setErrors({});
 
     try {
-      console.log('Intentando registrar usuario...');
-      
-      // LLAMAR AL BACKEND PARA REGISTRO
       const response = await apiService.register({
         email: formData.email,
         password: formData.password,
@@ -96,14 +93,14 @@ export default function RegisterPage() {
         phoneNumber: formData.phoneNumber,
         address: formData.address
       });
-
-      console.log('Registro exitoso:', response);
       
       // Mostrar mensaje de éxito y redirigir al login
       alert(`¡Cuenta creada exitosamente!\n\nBienvenido ${response.user.fullName}.\nAhora puedes iniciar sesión con tus credenciales.`);
       navigate('/');
     } catch (error) {
-      console.error('Error en registro:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error en registro:', error);
+      }
       
       let errorMessage = error.message || 'Error al crear la cuenta. Inténtalo de nuevo.';
       const newErrors = {};

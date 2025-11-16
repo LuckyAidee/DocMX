@@ -1,9 +1,10 @@
-const API_URL = process.env.REACT_APP_API_URL;
-
 class ApiService {
   constructor() {
     this.baseURL = process.env.REACT_APP_API_URL;
-    console.log('🔗 API Service configurado con URL:', this.baseURL);
+    // Solo log en desarrollo
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔗 API Service configurado con URL:', this.baseURL);
+    }
     this.csrfToken = null;
   }
 
@@ -41,7 +42,10 @@ class ApiService {
       if (!text) return null;
       try { return JSON.parse(text); } catch { return text; }
     } catch (error) {
-      console.error('API Error:', error);
+      // Solo log en desarrollo
+      if (process.env.NODE_ENV === 'development') {
+        console.error('API Error:', error);
+      }
       throw error;
     }
   }
@@ -111,7 +115,13 @@ class ApiService {
   }
 
   async getUserOrders() {
-    return this.request('/orders');
+    const res = await this.request('/orders');
+    // Backend returns a paginated object { data, page, limit, total, totalPages }
+    // Frontend OrderHistory expects an array of orders — unwrap for convenience.
+    if (res && typeof res === 'object' && Array.isArray(res.data)) {
+      return res.data;
+    }
+    return res;
   }
 }
 

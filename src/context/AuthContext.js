@@ -21,7 +21,9 @@ export const AuthProvider = ({ children }) => {
 
   const updateUserState = async (userData) => {
     try {
-      console.log('🔐 [AuthContext] Actualizando estado con userData:', userData);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔐 [AuthContext] Actualizando estado con userData:', userData);
+      }
 
       // Normalizar datos del usuario
       const validatedUser = {
@@ -36,7 +38,9 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setLoading(false);
 
-      console.log('[AuthContext] Estado actualizado exitosamente');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[AuthContext] Estado actualizado exitosamente');
+      }
       return validatedUser;
     } catch (error) {
       console.error('Error actualizando estado:', error);
@@ -50,7 +54,9 @@ export const AuthProvider = ({ children }) => {
       // Llamar al backend para limpiar la cookie HttpOnly
       await apiService.logout();
     } catch (error) {
-      console.error('Error en logout:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error en logout:', error);
+      }
     } finally {
       // Limpiar estado local en cualquier caso
       handleAuthFailure();
@@ -64,7 +70,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (updatedUserData) => {
-  console.log('🔄 [AuthContext] updateUser llamado con:', updatedUserData);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔄 [AuthContext] updateUser llamado con:', updatedUserData);
+  }
   
   // Si updatedUserData es el objeto completo del usuario, REEMPLAZAR completamente
   if (updatedUserData && typeof updatedUserData === 'object') {
@@ -77,10 +85,14 @@ export const AuthProvider = ({ children }) => {
       address: normalizeUserInput.text(updatedUserData.address || '', 500),
     };
 
-    console.log('✅ [AuthContext] Reemplazando usuario completo con:', validatedData);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ [AuthContext] Reemplazando usuario completo con:', validatedData);
+    }
     setUser(validatedData); // ← REEMPLAZAR completamente, no merge
   } else {
-    console.warn('⚠️ [AuthContext] updateUser recibió datos inválidos:', updatedUserData);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️ [AuthContext] updateUser recibió datos inválidos:', updatedUserData);
+    }
   }
 };
 
