@@ -114,8 +114,15 @@ class ApiService {
     });
   }
 
-  async getUserOrders() {
-    const res = await this.request('/orders');
+  async getUserOrders(params = {}) {
+    // params: { page, limit, status }
+    const qs = new URLSearchParams();
+    if (params.page) qs.set('page', String(params.page));
+    if (params.limit) qs.set('limit', String(params.limit));
+    if (params.status) qs.set('status', String(params.status));
+
+    const path = qs.toString() ? `/orders?${qs.toString()}` : '/orders';
+    const res = await this.request(path);
     // Backend returns a paginated object { data, page, limit, total, totalPages }
     // Frontend OrderHistory expects an array of orders — unwrap for convenience.
     if (res && typeof res === 'object' && Array.isArray(res.data)) {

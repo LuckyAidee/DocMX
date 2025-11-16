@@ -5,6 +5,7 @@ import Breadcrumbs from '../components/shared/Breadcrumbs';
 import { CheckCircle, Clock, XCircle, Download, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/api';
+import { servicesConfig } from '../config/services.config';
 
 export default function OrderHistory() {
   const [activeFilter, setActiveFilter] = useState('Todas');
@@ -36,8 +37,8 @@ export default function OrderHistory() {
     refetch, 
     isFetching 
   } = useQuery({
-    queryKey: ['orders'],
-    queryFn: () => apiService.getUserOrders(),
+    queryKey: ['orders', { limit: 100 }],
+    queryFn: () => apiService.getUserOrders({ limit: 100 }),
     staleTime: 30000,
   });
 
@@ -57,19 +58,30 @@ export default function OrderHistory() {
 
   // Función para obtener el nombre del servicio en español
   const getServiceName = (documentType) => {
-    const serviceNames = {
-      'acta-nacimiento': 'Acta de Nacimiento',
-      'acta-matrimonio': 'Acta de Matrimonio',
-      'acta-defuncion': 'Acta de Defunción',
-      'curp': 'CURP',
-      'rfc': 'RFC',
-      'e-firma': 'e.Firma',
-      'csf': 'CSF con RFC',
-      'correccion': 'Corrección de Acta',
-      'naturalizacion': 'Naturalización'
+    // Preferir la configuración centralizada del frontend
+    if (servicesConfig && servicesConfig[documentType] && servicesConfig[documentType].nombre) {
+      return servicesConfig[documentType].nombre;
+    }
+
+    // Mapeos rápidos para acrónimos y casos especiales
+    const acronyms = {
+      csf: 'CSF',
+      curp: 'CURP',
+      rfc: 'RFC',
+      idcif: 'IdCIF',
     };
-    
-    return serviceNames[documentType] || documentType;
+
+    if (!documentType) return '';
+
+    // Manejar caso especial exacto
+    if (documentType === 'e-firma' || documentType === 'efirma') return 'e.firma';
+
+    // Fallback: reemplazar guiones por espacios y Title Case cada palabra
+    return documentType.split(/[-_\s]+/).map((part) => {
+      const lower = part.toLowerCase();
+      if (acronyms[lower]) return acronyms[lower];
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    }).join(' ');
   };
 
   // Función para obtener el badge completo con ícono según estado
