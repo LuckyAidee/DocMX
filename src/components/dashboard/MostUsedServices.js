@@ -1,99 +1,117 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ServiceCard from '../shared/ServiceCard';
-import { TrendingUp } from 'lucide-react';
+import { servicesConfig } from '../../config/services.config';
 
 export default function MostUsedServices() {
-  const services = [
-    {
-      id: 1,
-      name: 'Acta de Nacimiento',
-      price: '120',
-      deliveryTime: '24-48 hrs',
-      backgroundColor: '#1a1a2e',
-      documentType: 'acta-nacimiento'
-    },
-    {
-      id: 2,
-      name: 'CURP',
-      price: '80',
-      deliveryTime: '12-24 hrs',
-      backgroundColor: '#16213e',
-      documentType: 'curp'
-    },
-    {
-      id: 3,
-      name: 'Acta de Matrimonio',
-      price: '150',
-      deliveryTime: '48 hrs',
-      backgroundColor: '#0f3460',
-      documentType: 'acta-matrimonio'
-    },
-    {
-      id: 4,
-      name: 'CSF con RFC y IDCIF',
-      price: '200',
-      deliveryTime: '24 hrs',
-      backgroundColor: '#1a5f7a',
-      documentType: 'csf'
-    },
-    {
-      id: 5,
-      name: 'Acta de Defunción',
-      price: '130',
-      deliveryTime: '24-48 hrs',
-      backgroundColor: '#134b5f',
-      documentType: 'acta-defuncion'
-    },
-    {
-      id: 6,
-      name: 'Corrección de Acta',
-      price: '180',
-      deliveryTime: '5-7 días',
-      backgroundColor: '#1b262c',
-      documentType: 'correccion'
-    },
-    {
-      id: 7,
-      name: 'Naturalización',
-      price: '350',
-      deliveryTime: '7-10 días',
-      backgroundColor: '#2d1b69',
-      documentType: 'naturalizacion'
-    },
-    {
-      id: 8,
-      name: 'CSF con RFC',
-      price: '150',
-      deliveryTime: '24 hrs',
-      backgroundColor: '#1e293b',
-      documentType: 'csf'
+  const navigate = useNavigate();
+
+  const scrollToCategoryNav = () => {
+    const categoryNav = document.getElementById('category-nav');
+    if (categoryNav) {
+      // Scroll suave hacia CategoryNav
+      categoryNav.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Aplicar efecto de escala
+      categoryNav.style.transform = 'scale(1.03)';
+
+      // Aplicar efecto hover a todos los botones (texto verde y líneas verdes)
+      const buttons = categoryNav.querySelectorAll('button');
+      const lines = categoryNav.querySelectorAll('button > div');
+
+      buttons.forEach(button => {
+        if (!button.classList.contains('text-teal-600')) {
+          button.style.color = '#0d9488'; // teal-600
+        }
+      });
+
+      lines.forEach(line => {
+        if (!line.style.width || line.style.width === '0px') {
+          line.style.width = '75%';
+        }
+      });
+
+      // Quitar el efecto después de 1 segundo
+      setTimeout(() => {
+        categoryNav.style.transform = 'scale(1)';
+
+        buttons.forEach(button => {
+          if (!button.classList.contains('text-teal-600')) {
+            button.style.color = '';
+          }
+        });
+
+        lines.forEach(line => {
+          if (line.classList.contains('w-0')) {
+            line.style.width = '';
+          }
+        });
+      }, 1000);
     }
-  ];
+  };
+
+  // Paleta de grises slate para fondos de tarjetas
+  const slateColors = ['#0f172a', '#1e293b', '#334155', '#475569', '#64748b'];
+
+  // Generar lista de servicios desde servicesConfig
+  const allServices = Object.values(servicesConfig).map((service, index) => ({
+    id: index + 1,
+    name: service.nombre,
+    price: service.precio.toFixed(2),
+    deliveryTime: service.tiempoEntrega,
+    documentType: service.svgKey,
+    backgroundColor: slateColors[index % slateColors.length],
+    serviceId: service.id
+  }));
+
+  // Función para obtener 8 servicios aleatorios
+  const getRandomServices = () => {
+    const shuffled = [...allServices].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 8);
+  };
+
+  // Estado para los servicios mostrados
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    // Intentar cargar desde sessionStorage
+    const storedServices = sessionStorage.getItem('mostUsedServices');
+
+    if (storedServices) {
+      setServices(JSON.parse(storedServices));
+    } else {
+      // Si no existen, generar nuevos aleatorios y guardarlos
+      const randomServices = getRandomServices();
+      setServices(randomServices);
+      sessionStorage.setItem('mostUsedServices', JSON.stringify(randomServices));
+    }
+  }, []);
 
   return (
     <section className="mb-16">
-      <div className="mb-10">
-        <div className="flex items-center justify-center gap-3 mb-3">
-          <div className="h-px w-12 bg-gradient-to-r from-transparent to-teal-500"></div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">
-              Tus más usados
-            </h2>
-          </div>
-          <div className="h-px w-12 bg-gradient-to-l from-transparent to-teal-500"></div>
+      <div className="mt-1 mb-8">
+        <div className="flex items-center justify-center">
+          <h2 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">
+            Tus más usados
+          </h2>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {services.map((service) => (
-          <ServiceCard
+          <div
             key={service.id}
-            name={service.name}
-            price={service.price}
-            deliveryTime={service.deliveryTime}
-            documentType={service.documentType}
-            backgroundColor={service.backgroundColor}
-          />
+            onClick={() => navigate(`/servicio/${service.serviceId}`)}
+            className="cursor-pointer"
+          >
+            <ServiceCard
+              name={service.name}
+              price={service.price}
+              deliveryTime={service.deliveryTime}
+              documentType={service.documentType}
+              backgroundColor={service.backgroundColor}
+            />
+          </div>
         ))}
       </div>
 
@@ -102,7 +120,10 @@ export default function MostUsedServices() {
           <span className="text-sm text-gray-600">
             ¿No encuentras lo que buscas?
           </span>
-          <button className="text-sm font-semibold text-teal-600 hover:text-teal-700 transition-colors">
+          <button
+            onClick={scrollToCategoryNav}
+            className="text-sm font-semibold text-teal-600 hover:text-teal-700 transition-colors"
+          >
             Ver todos los servicios
           </button>
         </div>

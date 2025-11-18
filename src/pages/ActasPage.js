@@ -4,40 +4,12 @@ import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import CategoryHero from '../components/shared/CategoryHero';
 import ServiceCard from '../components/shared/ServiceCard';
+import { getServicesByCategory } from '../config/services.config';
 
 export default function ActasPage() {
   const navigate = useNavigate();
-  
-  const actasServices = [
-    {
-      id: 1,
-      name: 'Acta de Nacimiento',
-      price: '15.00',
-      deliveryTime: '20 Minutos',
-      documentType: 'acta-nacimiento',
-      backgroundColor: '#475569', // <-- CAMBIO (Color de RFCPage)
-      heightClass: "h-96",
-      path: '/servicio/acta-nacimiento'
-    },
-    {
-      id: 2,
-      name: 'Acta de Matrimonio',
-      price: '15.00',
-      deliveryTime: '20 Minutos',
-      documentType: 'acta-matrimonio',
-      backgroundColor: '#64748b', // <-- CAMBIO (Color de RFCPage)
-      path: '/servicio/acta-matrimonio'
-    },
-    {
-      id: 3,
-      name: 'Acta de Defunción',
-      price: '15.00',
-      deliveryTime: '20 Minutos',
-      documentType: 'acta-defuncion',
-      backgroundColor: '#334155', // <-- CAMBIO (Color de RFCPage)
-      path: '/servicio/acta-defuncion'
-    }
-  ];
+
+  const actasServices = getServicesByCategory('Actas');
 
   return (
     <motion.div

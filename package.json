@@ -5,6 +5,7 @@
   "dependencies": {
     "@nestjs/common": "^11.1.8",
     "@nestjs/throttler": "^6.4.0",
+    "@studio-freight/react-lenis": "^0.0.47",
     "@tanstack/react-query": "^5.90.8",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

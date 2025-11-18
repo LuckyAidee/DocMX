@@ -17,8 +17,8 @@ export default function CategoryNav() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="h-14 bg-transparent border-none flex items-center px-10 fixed top-[136px] right-0 left-16 z-20">
-      <ul className="flex items-center justify-center gap-12 w-full">
+    <nav id="category-nav" className="h-14 bg-transparent border-none flex items-center px-10 mt-1 mb-1 z-20 transition-all duration-500">
+      <ul className="flex items-center justify-evenly w-full max-w-4xl mx-auto">
         {categories.map((category, index) => {
           const active = isActive(category.path);
          
@@ -31,7 +31,7 @@ export default function CategoryNav() {
                   transition-all duration-300 group
                   ${active
                     ? 'text-teal-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    : 'text-gray-600 hover:text-teal-600'
                   }
                 `}
               >
@@ -42,7 +42,7 @@ export default function CategoryNav() {
                   transition-all duration-300
                   ${active
                     ? 'w-full bg-teal-600'
-                    : 'w-0 bg-gray-400 group-hover:w-3/4'
+                    : 'w-0 bg-teal-600 group-hover:w-3/4'
                   }
                 `}></div>
               </button>

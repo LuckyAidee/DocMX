@@ -6,7 +6,7 @@ import { Clock, DollarSign, FileText, ShoppingCart, Shield, CheckCircle, AlertCi
 import { useAuth } from '../../context/AuthContext';
 import { apiService } from '../../services/api';
 import { servicesConfig } from '../../config/services.config';
-import { DocumentSVGs } from '../../pages/service/DocumentSVGs';
+import { DocumentSVGs } from '../../components/shared/ServiceCard';
 import ServiceForms from '../../pages/service/ServiceForms';
 
 export default function ServiceDetail() {
@@ -36,34 +36,66 @@ export default function ServiceDetail() {
     );
   }
 
+  // Funciones de validación de campos
+  const isValidCURP = (curp) => {
+    if (curp.length !== 18) return false;
+    const curpRegex = /^[A-Z]{4}\d{6}[A-Z]{6}[A-Z0-9]{2}$/;
+    return curpRegex.test(curp);
+  };
+
+  const isValidRFC = (rfc) => {
+    if (!rfc || rfc.trim().length === 0) return false;
+    // RFC persona física: 13 caracteres (AAAA000000XXX)
+    // RFC persona moral: 12 caracteres (AAA000000XXX)
+    const rfcRegex = /^[A-ZÑ&]{3,4}\d{6}[A-V1-9][A-Z0-9]{2}$/;
+    return (rfc.length === 12 || rfc.length === 13) && rfcRegex.test(rfc);
+  };
+
+  const isValidIDCIF = (idcif) => {
+    if (!idcif || idcif.trim().length === 0) return false;
+    // IdCIF generalmente es numérico de 10 dígitos
+    const idcifRegex = /^\d{10}$/;
+    return idcifRegex.test(idcif);
+  };
+
   const handlePurchase = async () => {
+    // Validar saldo para servicios especializados
     if (servicio.esEspecializado) {
       if (user.balance < servicio.precio) {
         setError('Saldo insuficiente. Por favor recarga tu cuenta.');
         return;
       }
     } else {
-      if (servicio.camposFormulario.includes('curp')) {
+      // Validar cada campo requerido con su regex correspondiente
+      if (servicio.camposFormulario && servicio.camposFormulario.includes('curp')) {
         if (!formData.curp.trim()) {
           setError('Por favor ingresa tu CURP');
           return;
         }
-        if (formData.curp.length !== 18) {
-          setError('El CURP debe tener 18 caracteres');
+        if (!isValidCURP(formData.curp)) {
+          setError('El CURP no tiene un formato válido (debe ser 18 caracteres: AAAA000000HXXXXX00)');
           return;
         }
       }
 
-      if (servicio.camposFormulario.includes('rfc')) {
+      if (servicio.camposFormulario && servicio.camposFormulario.includes('rfc')) {
         if (!formData.rfc.trim()) {
           setError('Por favor ingresa tu RFC');
           return;
         }
+        if (!isValidRFC(formData.rfc)) {
+          setError('El RFC no tiene un formato válido (12 o 13 caracteres)');
+          return;
+        }
       }
 
-      if (servicio.camposFormulario.includes('idcif')) {
+      if (servicio.camposFormulario && servicio.camposFormulario.includes('idcif')) {
         if (!formData.idcif.trim()) {
           setError('Por favor ingresa tu IdCIF');
+          return;
+        }
+        if (!isValidIDCIF(formData.idcif)) {
+          setError('El IdCIF debe ser de 10 dígitos');
           return;
         }
       }
@@ -92,14 +124,9 @@ export default function ServiceDetail() {
       const response = await apiService.createOrder(orderData);
 
       try {
-        const userResponse = await fetch(`/api/users/${user._id}`); // Ajusta esta ruta si es necesario
-        if (userResponse.ok) {
-          const updatedUser = await userResponse.json();
-          updateUser(updatedUser);
-          console.log('✅ Usuario actualizado correctamente:', updatedUser);
-        } else {
-          throw new Error('Error en respuesta del servidor');
-        }
+        const updatedUser = await apiService.getUserProfile();
+        updateUser(updatedUser);
+        console.log('✅ Usuario actualizado correctamente:', updatedUser);
       } catch (userError) {
         console.error('❌ Error al actualizar usuario:', userError);
         // Fallback: actualizar solo el balance localmente
@@ -122,18 +149,40 @@ export default function ServiceDetail() {
     navigate('/dashboard/orders');
   };
 
-  const isValidCURP = (curp) => {
-    if (curp.length !== 18) return false;
-    const curpRegex = /^[A-Z]{4}\d{6}[A-Z]{6}[A-Z0-9]{2}$/;
-    return curpRegex.test(curp);
+  // Función para validar todos los campos requeridos
+  const validateAllFields = () => {
+    // Si es servicio especializado, solo verificar saldo
+    if (servicio.esEspecializado) {
+      return user.balance >= servicio.precio;
+    }
+
+    // Validar cada campo requerido
+    if (servicio.camposFormulario && servicio.camposFormulario.length > 0) {
+      for (const campo of servicio.camposFormulario) {
+        if (campo === 'curp') {
+          if (!formData.curp || !isValidCURP(formData.curp)) {
+            return false;
+          }
+        }
+        if (campo === 'rfc') {
+          if (!formData.rfc || !isValidRFC(formData.rfc)) {
+            return false;
+          }
+        }
+        if (campo === 'idcif') {
+          if (!formData.idcif || !isValidIDCIF(formData.idcif)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Finalmente, verificar saldo
+    return user.balance >= servicio.precio;
   };
 
-  const DocumentSVG = DocumentSVGs[servicio.svgKey];
-  const canPurchase = servicio.esEspecializado 
-    ? user.balance >= servicio.precio
-    : (servicio.camposFormulario.includes('curp') 
-        ? formData.curp.length === 18 && isValidCURP(formData.curp) && user.balance >= servicio.precio
-        : user.balance >= servicio.precio);
+  const DocumentSVG = DocumentSVGs[servicio.svgKey] || DocumentSVGs.actaNacimiento;
+  const canPurchase = validateAllFields();
 
   const hexToRgb = (hex) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

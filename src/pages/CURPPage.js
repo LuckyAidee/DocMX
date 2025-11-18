@@ -4,58 +4,12 @@ import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import CategoryHeroCURP from '../components/shared/CategoryHeroCURP';
 import ServiceCard from '../components/shared/ServiceCard';
+import { getServicesByCategory } from '../config/services.config';
 
 export default function CURPPage() {
   const navigate = useNavigate();
-  
-  const curpServices = [
-    {
-      id: 1,
-      name: 'Unificación de CURP',
-      price: '200.00',
-      deliveryTime: '24-48 hrs',
-      documentType: 'curp-unificacion',
-      backgroundColor: '#475569', // <-- CAMBIO (Color de RFCPage)
-      heightClass: "h-96",
-      path: '/servicio/unificacion-curp'
-    },
-    {
-      id: 2,
-      name: 'Dar de baja CURP',
-      price: '150.00',
-      deliveryTime: '24 hrs',
-      documentType: 'curp-baja',
-      backgroundColor: '#64748b', // <-- CAMBIO (Color de RFCPage)
-      path: '/servicio/baja-curp'
-    },
-    {
-      id: 3,
-      name: 'Dar de alta CURP',
-      price: '180.00',
-      deliveryTime: '24-48 hrs',
-      documentType: 'curp-alta',
-      backgroundColor: '#334155', // <-- CAMBIO (Color de RFCPage)
-      path: '/servicio/alta-curp'
-    },
-    {
-      id: 4,
-      name: 'Descargar CURP',
-      price: '50.00',
-      deliveryTime: '20 min',
-      documentType: 'curp-descargar',
-      backgroundColor: '#1e293b', // <-- CAMBIO (Color de RFCPage)
-      path: '/servicio/descargar-curp'
-    },
-    {
-      id: 5,
-      name: 'Certificación CURP',
-      price: '250.00',
-      deliveryTime: '48-72 hrs',
-      documentType: 'curp-certificacion',
-      backgroundColor: '#0f172a', // <-- CAMBIO (Color de RFCPage)
-      path: '/servicio/certificacion-curp'
-    }
-  ];
+
+  const curpServices = getServicesByCategory('CURP');
 
   return (
     <motion.div

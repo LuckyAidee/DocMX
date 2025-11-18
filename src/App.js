@@ -43,7 +43,7 @@ function App() {
           {/* Rutas públicas sin Layout */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          
+
           {/* Rutas protegidas con Layout persistente */}
           <Route element={
             <ProtectedRoute>
@@ -60,11 +60,6 @@ function App() {
             <Route path="/correcciones" element={<CorreccionesPage />} />
             <Route path="/extranjeros" element={<ExtranjerosPage />} />
             <Route path="/servicio/:serviceId" element={<ServiceDetail />} />
-            <Route path="/servicio/:serviceId" element={
-              <ProtectedRoute>
-                <ServiceDetail />
-              </ProtectedRoute>
-            } />
           </Route>
         </Routes>
       </Router>
