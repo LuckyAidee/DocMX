@@ -1,6 +1,7 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { apiService } from '../services/api';
 import { normalizeUserInput } from '../utils/sanitize';
+import { queryClient } from '../services/queryClient';
 
 const AuthContext = createContext();
 
@@ -38,6 +39,13 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setLoading(false);
 
+      // Invalidate orders so components like OrderHistory refetch for the new user
+      try {
+        queryClient.invalidateQueries({ queryKey: ['orders'], exact: false });
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') console.warn('Error invalidating orders query', e);
+      }
+
       if (process.env.NODE_ENV === 'development') {
         console.log('[AuthContext] Estado actualizado exitosamente');
       }
@@ -60,8 +68,36 @@ export const AuthProvider = ({ children }) => {
     } finally {
       // Limpiar estado local en cualquier caso
       handleAuthFailure();
+      // Invalidate orders and other user-specific queries so UI clears
+      try {
+        queryClient.invalidateQueries({ queryKey: ['orders'], exact: false });
+        queryClient.clear();
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') console.warn('Error invalidating queries on logout', e);
+      }
     }
   };
+
+  // On mount, try restoring session/profile (useful when switching users or after refresh)
+  useEffect(() => {
+    let mounted = true;
+    const restore = async () => {
+      setLoading(true);
+      try {
+        const profile = await apiService.getUserProfile();
+        if (profile && mounted) {
+          await updateUserState(profile);
+        }
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') console.log('[AuthContext] No session to restore');
+        handleAuthFailure();
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    restore();
+    return () => { mounted = false; };
+  }, []);
 
   const handleAuthFailure = () => {
     setUser(null);

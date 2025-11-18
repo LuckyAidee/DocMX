@@ -6,6 +6,7 @@ class ApiService {
       console.log('🔗 API Service configurado con URL:', this.baseURL);
     }
     this.csrfToken = null;
+    this._lastCsrfAttempt = 0;
   }
 
   async request(endpoint, options = {}) {
@@ -52,6 +53,15 @@ class ApiService {
 
   async getCsrfHeaders() {
     if (this.csrfToken) return { 'X-CSRF-Token': this.csrfToken };
+
+    // Throttle attempts to fetch CSRF token to avoid tight loops
+    const now = Date.now();
+    if (this._lastCsrfAttempt && now - this._lastCsrfAttempt < 800) {
+      // recent attempt — avoid flooding the server
+      return {};
+    }
+    this._lastCsrfAttempt = now;
+
     try {
       const res = await fetch(`${this.baseURL}/auth/csrf`, { credentials: 'include' });
       if (!res.ok) return {};
@@ -69,6 +79,12 @@ class ApiService {
   handleUnauthorized() {
     // Redirigir al login si no estamos ya allí
     if (!window.location.pathname.includes('/login')) {
+      // Protect against multiple rapid redirects which can cause a reload loop.
+      const lastRedirect = sessionStorage.getItem('lastAuthRedirect') || 0;
+      const now = Date.now();
+      if (now - Number(lastRedirect) < 2000) return; // ignore if redirected very recently
+      sessionStorage.setItem('lastAuthRedirect', String(now));
+      // App routes expect login at '/', so redirect there.
       window.location.href = '/';
     }
   }

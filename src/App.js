@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
@@ -20,18 +20,10 @@ import CorreccionesPage from './pages/CorreccionesPage';
 import ExtranjerosPage from './pages/ExtranjerosPage';
 
 import ServiceDetail from './pages/service/ServiceDetail';
+import SearchResults from './pages/SearchResults';
+import AllServices from './pages/AllServices';
 
-// Configurar QueryClient
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 30000, // 30 segundos - datos se consideran frescos
-      gcTime: 5 * 60 * 1000, // 5 minutos - tiempo de caché (antes cacheTime)
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import queryClient from './services/queryClient';
 
 function App() {
   return (
@@ -65,6 +57,8 @@ function App() {
                 <ServiceDetail />
               </ProtectedRoute>
             } />
+            <Route path="/servicios" element={<AllServices />} />
+            <Route path="/search" element={<SearchResults />} />
           </Route>
         </Routes>
       </Router>

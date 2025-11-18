@@ -16,6 +16,8 @@ export default function AddBalance() {
   });
 
   const [errors, setErrors] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState({ title: '', message: '' });
 
   // Datos bancarios
   const datosBancarios = {
@@ -77,19 +79,49 @@ export default function AddBalance() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  // send the transfer to backend
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      console.log('Datos de la transferencia:', formData);
-      
-      alert('¡Solicitud de recarga enviada!\n\nTu saldo será agregado una vez que se verifique la transferencia.\nRecibirás un correo de confirmación.');
-      
-      navigate('/dashboard');
+    if (!validateForm()) return;
+
+    console.log('Datos de la transferencia:', formData);
+
+    // Map frontend field names to backend DTO names
+    const payload = {
+      // optional: name could be populated from user profile elsewhere
+      email: formData.email,
+      amount: Number(formData.monto),
+      bank: formData.banco,
+      trackingKey: formData.claveRastreo,
+    };
+
+    try {
+      // Lazy-import apiService to avoid circular deps
+      const { apiService } = await import('../services/api');
+      await apiService.request('/transfers', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      setModalData({
+        title: 'Solicitud enviada',
+        message: 'Tu solicitud de recarga fue recibida. Tu saldo será agregado una vez que se verifique la transferencia. Te enviaremos un correo de confirmación cuando se procese.'
+      });
+      setShowModal(true);
+    } catch (err) {
+      console.error('Error creando transferencia:', err);
+      setModalData({ title: 'Error', message: 'Error al enviar la solicitud: ' + (err.message || 'intenta de nuevo') });
+      setShowModal(true);
     }
   };
 
+  const closeModal = () => {
+    setShowModal(false);
+    if (modalData.title === 'Solicitud enviada') navigate('/dashboard');
+  };
+
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -310,5 +342,18 @@ export default function AddBalance() {
 
             </div>
     </motion.div>
+    {showModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
+        <div className="relative bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 z-20">
+          <h3 className="text-xl font-bold mb-3">{modalData.title}</h3>
+          <p className="text-gray-700 mb-6 whitespace-pre-line">{modalData.message}</p>
+          <div className="flex justify-end">
+            <button onClick={closeModal} className="px-4 py-2 bg-teal-600 text-white rounded-lg">Aceptar</button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

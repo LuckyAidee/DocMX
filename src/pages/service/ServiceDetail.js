@@ -8,6 +8,7 @@ import { apiService } from '../../services/api';
 import { servicesConfig } from '../../config/services.config';
 import { DocumentSVGs } from '../../pages/service/DocumentSVGs';
 import ServiceForms from '../../pages/service/ServiceForms';
+import { queryClient } from '../../services/queryClient';
 
 export default function ServiceDetail() {
   const navigate = useNavigate();
@@ -89,22 +90,31 @@ export default function ServiceDetail() {
         }
       };
 
-      const response = await apiService.createOrder(orderData);
+      await apiService.createOrder(orderData);
+
+      // Invalidate orders so OrderHistory refetches the latest after purchase
+      try {
+        queryClient.invalidateQueries({ queryKey: ['orders'], exact: false });
+      } catch (e) {
+        console.warn('Error invalidating orders after purchase', e);
+      }
 
       try {
-        const userResponse = await fetch(`/api/users/${user._id}`); // Ajusta esta ruta si es necesario
-        if (userResponse.ok) {
-          const updatedUser = await userResponse.json();
+        // Use apiService to fetch the current profile from the backend
+        // instead of a relative fetch to `/api/...` which hits the dev server
+        // (and returns HTML) causing a JSON parse error.
+        const updatedUser = await apiService.getUserProfile();
+        if (updatedUser) {
           updateUser(updatedUser);
           console.log('✅ Usuario actualizado correctamente:', updatedUser);
         } else {
-          throw new Error('Error en respuesta del servidor');
+          throw new Error('Perfil vacío recibido');
         }
       } catch (userError) {
         console.error('❌ Error al actualizar usuario:', userError);
         // Fallback: actualizar solo el balance localmente
-        const newBalance = user.balance - servicio.precio;
-        updateUser({ ...user, balance: newBalance });
+        const newBalance = (user && user.balance) ? user.balance - servicio.precio : undefined;
+        if (newBalance !== undefined) updateUser({ ...user, balance: newBalance });
       }
 
       setShowSuccessModal(true);

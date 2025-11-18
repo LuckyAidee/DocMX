@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function TopBar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   // Iniciales del usuario
   const getInitials = (name) => {
@@ -25,9 +25,7 @@ export default function TopBar() {
 
   const initials = getInitials(user?.fullName);
 
-  const handleLogout = () => {
-    logout();
-  };
+  // Logout helper removed because it was unused; call `logout()` directly where needed.
 
   return (
     <header className="bg-white border-b border-gray-100 h-16 flex items-center justify-between px-8 fixed top-0 right-0 left-16 z-40 shadow-sm backdrop-blur-sm bg-white/95">
