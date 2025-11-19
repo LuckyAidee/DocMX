@@ -3,7 +3,7 @@ class ApiService {
     this.baseURL = process.env.REACT_APP_API_URL;
     // Solo log en desarrollo
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔗 API Service configurado con URL:', this.baseURL);
+      console.log('ðŸ”— API Service configurado con URL:', this.baseURL);
     }
     this.csrfToken = null;
   }
@@ -14,7 +14,7 @@ class ApiService {
     const csrfHeader = await this.getCsrfHeaders();
 
     const config = {
-      credentials: 'include', // INCLUYE COOKIES AUTOMÁTICAMENTE
+      credentials: 'include', // INCLUYE COOKIES AUTOMÃTICAMENTE
       headers: {
         'Content-Type': 'application/json',
         ...csrfHeader,
@@ -27,10 +27,10 @@ class ApiService {
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        // Manejo específico de errores de autenticación
+        // Manejo especÃ­fico de errores de autenticaciÃ³n
         if (response.status === 401) {
           this.handleUnauthorized();
-          throw new Error('Sesión expirada o inválida');
+          throw new Error('SesiÃ³n expirada o invÃ¡lida');
         }
         const text = await response.text().catch(() => '');
         let errorData = {};
@@ -67,10 +67,12 @@ class ApiService {
   }
 
   handleUnauthorized() {
-    // Redirigir al login si no estamos ya allí
-    if (!window.location.pathname.includes('/login')) {
-      window.location.href = '/';
+    const publicRoutes = ['/', '/login', '/register'];
+    const { pathname } = window.location;
+    if (publicRoutes.includes(pathname)) {
+      return;
     }
+    window.location.href = '/';
   }
 
   // Auth endpoints actualizados
@@ -124,7 +126,7 @@ class ApiService {
     const path = qs.toString() ? `/orders?${qs.toString()}` : '/orders';
     const res = await this.request(path);
     // Backend returns a paginated object { data, page, limit, total, totalPages }
-    // Frontend OrderHistory expects an array of orders — unwrap for convenience.
+    // Frontend OrderHistory expects an array of orders â€” unwrap for convenience.
     if (res && typeof res === 'object' && Array.isArray(res.data)) {
       return res.data;
     }
