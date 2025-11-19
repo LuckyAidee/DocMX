@@ -50,8 +50,17 @@ export default function MostUsedServices() {
     }
   };
 
-  // Paleta de grises slate para fondos de tarjetas
-  const slateColors = ['#0f172a', '#1e293b', '#334155', '#475569', '#64748b'];
+  // Paleta de gradientes slate con toques teal/cyan (combina con AnnouncementBanner)
+  const gradientColors = [
+    'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',           // slate-900 to slate-800
+    'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)', // slate-800 via slate-700
+    'linear-gradient(135deg, #0f172a 0%, #115e59 100%)',           // slate-900 to teal-800
+    'linear-gradient(135deg, #334155 0%, #164e63 100%)',           // slate-700 to cyan-900
+    'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #134e4a 100%)', // slate-800 via slate-900 to teal-900
+    'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)', // slate-900 via slate-800
+    'linear-gradient(135deg, #164e63 0%, #1e293b 100%)',           // cyan-900 to slate-800
+    'linear-gradient(135deg, #115e59 0%, #0f172a 100%)'            // teal-800 to slate-900
+  ];
 
   // Generar lista de servicios desde servicesConfig
   const allServices = Object.values(servicesConfig).map((service, index) => ({
@@ -60,20 +69,20 @@ export default function MostUsedServices() {
     price: service.precio.toFixed(2),
     deliveryTime: service.tiempoEntrega,
     documentType: service.svgKey,
-    backgroundColor: slateColors[index % slateColors.length],
+    backgroundColor: gradientColors[index % gradientColors.length],
     serviceId: service.id
   }));
-
-  // Función para obtener 8 servicios aleatorios
-  const getRandomServices = () => {
-    const shuffled = [...allServices].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 8);
-  };
 
   // Estado para los servicios mostrados
   const [services, setServices] = useState([]);
 
   useEffect(() => {
+    // Función para obtener 8 servicios aleatorios
+    const getRandomServices = () => {
+      const shuffled = [...allServices].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, 8);
+    };
+
     // Intentar cargar desde sessionStorage
     const storedServices = sessionStorage.getItem('mostUsedServices');
 
@@ -85,6 +94,7 @@ export default function MostUsedServices() {
       setServices(randomServices);
       sessionStorage.setItem('mostUsedServices', JSON.stringify(randomServices));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -15,7 +15,8 @@ export default function ServiceDetail() {
   const { user, updateUser } = useAuth();
   const [formData, setFormData] = useState({ curp: '', rfc: '', idcif: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+  const [globalError, setGlobalError] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const servicio = servicesConfig[serviceId];
@@ -53,60 +54,55 @@ export default function ServiceDetail() {
 
   const isValidIDCIF = (idcif) => {
     if (!idcif || idcif.trim().length === 0) return false;
-    // IdCIF generalmente es numérico de 10 dígitos
-    const idcifRegex = /^\d{10}$/;
+    // IdCIF: alfanumérico de 8 a 13 caracteres
+    if (idcif.length < 8 || idcif.length > 13) return false;
+    const idcifRegex = /^[A-Z0-9]{8,13}$/;
     return idcifRegex.test(idcif);
   };
 
   const handlePurchase = async () => {
-    // Validar saldo para servicios especializados
-    if (servicio.esEspecializado) {
-      if (user.balance < servicio.precio) {
-        setError('Saldo insuficiente. Por favor recarga tu cuenta.');
-        return;
-      }
-    } else {
-      // Validar cada campo requerido con su regex correspondiente
-      if (servicio.camposFormulario && servicio.camposFormulario.includes('curp')) {
+    // Validar saldo
+    if (user.balance < servicio.precio) {
+      setGlobalError('Saldo insuficiente. Por favor recarga tu cuenta.');
+      return;
+    }
+
+    // Para servicios no especializados, verificar que no haya errores en los campos
+    if (!servicio.esEspecializado && servicio.camposFormulario && servicio.camposFormulario.length > 0) {
+      const newErrors = {};
+
+      if (servicio.camposFormulario.includes('curp')) {
         if (!formData.curp.trim()) {
-          setError('Por favor ingresa tu CURP');
-          return;
-        }
-        if (!isValidCURP(formData.curp)) {
-          setError('El CURP no tiene un formato válido (debe ser 18 caracteres: AAAA000000HXXXXX00)');
-          return;
+          newErrors.curp = 'Este campo es obligatorio';
+        } else if (!isValidCURP(formData.curp)) {
+          newErrors.curp = 'El formato ingresado no es válido';
         }
       }
 
-      if (servicio.camposFormulario && servicio.camposFormulario.includes('rfc')) {
+      if (servicio.camposFormulario.includes('rfc')) {
         if (!formData.rfc.trim()) {
-          setError('Por favor ingresa tu RFC');
-          return;
-        }
-        if (!isValidRFC(formData.rfc)) {
-          setError('El RFC no tiene un formato válido (12 o 13 caracteres)');
-          return;
+          newErrors.rfc = 'Este campo es obligatorio';
+        } else if (!isValidRFC(formData.rfc)) {
+          newErrors.rfc = 'El formato ingresado no es válido';
         }
       }
 
-      if (servicio.camposFormulario && servicio.camposFormulario.includes('idcif')) {
+      if (servicio.camposFormulario.includes('idcif')) {
         if (!formData.idcif.trim()) {
-          setError('Por favor ingresa tu IdCIF');
-          return;
-        }
-        if (!isValidIDCIF(formData.idcif)) {
-          setError('El IdCIF debe ser de 10 dígitos');
-          return;
+          newErrors.idcif = 'Este campo es obligatorio';
+        } else if (!isValidIDCIF(formData.idcif)) {
+          newErrors.idcif = 'El formato ingresado no es válido';
         }
       }
 
-      if (user.balance < servicio.precio) {
-        setError('Saldo insuficiente. Por favor recarga tu cuenta.');
+      // Si hay errores, actualizar el estado y detener
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
         return;
       }
     }
 
-    setError('');
+    setGlobalError('');
     setIsLoading(true);
 
     try {
@@ -121,7 +117,7 @@ export default function ServiceDetail() {
         }
       };
 
-      const response = await apiService.createOrder(orderData);
+      await apiService.createOrder(orderData);
 
       try {
         const updatedUser = await apiService.getUserProfile();
@@ -138,7 +134,7 @@ export default function ServiceDetail() {
 
     } catch (err) {
       console.error('Error creando orden:', err);
-      setError(err.message || 'Error al procesar la compra. Intenta nuevamente.');
+      setGlobalError(err.message || 'Error al procesar la compra. Intenta nuevamente.');
     } finally {
       setIsLoading(false);
     }
@@ -156,7 +152,8 @@ export default function ServiceDetail() {
       return user.balance >= servicio.precio;
     }
 
-    // Validar cada campo requerido
+    // Validar cada campo requerido directamente desde formData
+    // No dependemos del objeto errors porque solo se llena cuando el usuario interactúa
     if (servicio.camposFormulario && servicio.camposFormulario.length > 0) {
       for (const campo of servicio.camposFormulario) {
         if (campo === 'curp') {
@@ -351,33 +348,34 @@ export default function ServiceDetail() {
 
                   <div className="space-y-6">
                     
-                    <ServiceForms 
+                    <ServiceForms
                       camposFormulario={servicio.camposFormulario}
                       formData={formData}
                       setFormData={(data) => {
                         setFormData(data);
-                        setError('');
+                        setGlobalError('');
                       }}
-                      error={error}
+                      errors={errors}
+                      setErrors={setErrors}
                       esEspecializado={servicio.esEspecializado}
                       mensajeEspecializado={servicio.mensajeEspecializado}
                     />
 
-                    {error && (
+                    {globalError && (
                       <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
                         <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
-                        <p className="text-sm text-red-700 font-medium">{error}</p>
+                        <p className="text-sm text-red-700 font-medium">{globalError}</p>
                       </div>
                     )}
-                    
-                    {!servicio.esEspecializado && servicio.camposFormulario.includes('curp') && formData.curp.length === 18 && isValidCURP(formData.curp) && !error && (
+
+                    {!servicio.esEspecializado && servicio.camposFormulario.includes('curp') && formData.curp.length === 18 && isValidCURP(formData.curp) && !errors.curp && !globalError && (
                       <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
                         <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
                         <p className="text-sm text-green-700 font-medium">CURP válido - Listo para continuar</p>
                       </div>
                     )}
 
-                    {!servicio.esEspecializado && servicio.camposFormulario.includes('curp') && formData.curp.length > 0 && formData.curp.length < 18 && !error && (
+                    {!servicio.esEspecializado && servicio.camposFormulario.includes('curp') && formData.curp.length > 0 && formData.curp.length < 18 && !errors.curp && !globalError && (
                       <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
                         <span className="font-semibold">{formData.curp.length}/18</span> caracteres ingresados
                       </p>

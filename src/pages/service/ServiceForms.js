@@ -19,24 +19,77 @@ const isValidIdCIF = (idcif) => {
   return idcifRegex.test(idcif);
 };
 
-const InputField = ({ 
-  type, 
-  label, 
-  placeholder, 
-  maxLength, 
-  validLength, 
-  validator, 
-  formData, 
-  setFormData, 
-  error,
-  helpText 
+const InputField = ({
+  type,
+  label,
+  placeholder,
+  maxLength,
+  validLength,
+  validator,
+  formData,
+  setFormData,
+  errors,
+  setErrors,
+  helpText
 }) => {
   const value = formData[type] || '';
-  const isValid = validLength 
-    ? (Array.isArray(validLength) 
+  const hasError = errors && errors[type];
+  const errorMessage = hasError ? errors[type] : '';
+
+  const isValid = validLength
+    ? (Array.isArray(validLength)
         ? validLength.includes(value.length) && validator(value)
         : value.length === validLength && validator(value))
     : validator(value);
+
+  const validateField = (val) => {
+    if (!val || val.trim() === '') {
+      return 'Este campo es obligatorio';
+    }
+
+    if (validLength) {
+      if (Array.isArray(validLength)) {
+        if (!validLength.includes(val.length)) {
+          return `Debe tener ${validLength.join(' o ')} caracteres`;
+        }
+      } else {
+        if (val.length !== validLength) {
+          return `Debe tener exactamente ${validLength} caracteres`;
+        }
+      }
+    }
+
+    if (!validator(val)) {
+      return 'El formato ingresado no es válido';
+    }
+
+    return null;
+  };
+
+  const handleChange = (e) => {
+    const newValue = e.target.value.toUpperCase();
+    setFormData({ ...formData, [type]: newValue });
+
+    // Validar en tiempo real solo si el usuario ya comenzó a escribir
+    if (newValue.length > 0) {
+      const validationError = validateField(newValue);
+      if (setErrors) {
+        setErrors(prev => ({
+          ...prev,
+          [type]: validationError
+        }));
+      }
+    } else {
+      // Limpiar error si el campo está vacío
+      if (setErrors) {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[type];
+          return newErrors;
+        });
+      }
+    }
+  };
 
   return (
     <div>
@@ -45,26 +98,33 @@ const InputField = ({
         <span className="text-red-500">*</span>
         <span className="text-xs font-normal text-gray-500">{helpText}</span>
       </label>
-      
+
       <div className="space-y-2">
         <input
           type="text"
           id={type}
           value={value}
-          onChange={(e) => setFormData({ ...formData, [type]: e.target.value.toUpperCase() })}
+          onChange={handleChange}
           placeholder={placeholder}
           maxLength={maxLength}
           className={`w-full px-5 py-4 border-2 rounded-xl text-gray-800 text-lg font-semibold placeholder-gray-400 transition-all duration-300
-            ${error 
-              ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-100' 
+            ${hasError
+              ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-100'
               : 'border-gray-300 bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-100'
             } focus:outline-none`}
         />
-        
+
+        {hasError && (
+          <div className="flex items-center gap-2 text-red-600 text-sm font-medium px-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-          <div 
+          <div
             className={`h-full transition-all duration-300 ${
-              isValid ? 'bg-green-500' : 'bg-teal-500'
+              isValid ? 'bg-green-500' : hasError ? 'bg-red-400' : 'bg-teal-500'
             }`}
             style={{width: `${Math.min((value.length / maxLength) * 100, 100)}%`}}
           ></div>
@@ -74,8 +134,8 @@ const InputField = ({
   );
 };
 
-export default function ServiceForms({ camposFormulario, formData, setFormData, error, esEspecializado, mensajeEspecializado }) {
-  
+export default function ServiceForms({ camposFormulario, formData, setFormData, errors, setErrors, esEspecializado, mensajeEspecializado }) {
+
   if (esEspecializado) {
     return (
       <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-8 shadow-lg">
@@ -98,7 +158,7 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
 
   if (camposFormulario && camposFormulario.includes('curp')) {
     inputs.push(
-      <InputField 
+      <InputField
         key="curp"
         type="curp"
         label="CURP"
@@ -108,7 +168,8 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
         validator={isValidCURP}
         formData={formData}
         setFormData={setFormData}
-        error={error}
+        errors={errors}
+        setErrors={setErrors}
         helpText="(18 caracteres)"
       />
     );
@@ -116,7 +177,7 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
 
   if (camposFormulario && camposFormulario.includes('rfc')) {
     inputs.push(
-      <InputField 
+      <InputField
         key="rfc"
         type="rfc"
         label="RFC"
@@ -126,7 +187,8 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
         validator={isValidRFC}
         formData={formData}
         setFormData={setFormData}
-        error={error}
+        errors={errors}
+        setErrors={setErrors}
         helpText="(12 o 13 caracteres)"
       />
     );
@@ -134,7 +196,7 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
 
   if (camposFormulario && camposFormulario.includes('idcif')) {
     inputs.push(
-      <InputField 
+      <InputField
         key="idcif"
         type="idcif"
         label="IdCIF"
@@ -144,7 +206,8 @@ export default function ServiceForms({ camposFormulario, formData, setFormData, 
         validator={(val) => val.length >= 8 && val.length <= 13 && isValidIdCIF(val)}
         formData={formData}
         setFormData={setFormData}
-        error={error}
+        errors={errors}
+        setErrors={setErrors}
         helpText="(8 a 13 caracteres)"
       />
     );

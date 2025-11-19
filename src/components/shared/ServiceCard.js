@@ -508,7 +508,7 @@ function ServiceCard({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
-      <div className="absolute inset-0" style={{ backgroundColor }} />
+      <div className="absolute inset-0" style={{ background: backgroundColor }} />
 
       <div className="absolute inset-0 overflow-visible">
         <div className="absolute inset-0 flex items-center justify-center">

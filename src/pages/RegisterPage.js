@@ -289,9 +289,17 @@ export default function RegisterPage() {
               />
               <label htmlFor="aceptaTerminos" className="ml-2 text-sm text-gray-700">
                 Acepto los{' '}
-                <a href="#" target="_blank" rel="noopener noreferrer" className="text-teal-500 hover:text-teal-600 font-medium transition">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // TODO: Abrir modal o navegar a página de términos y condiciones
+                    console.log('Términos y condiciones - Pendiente de implementar');
+                  }}
+                  className="text-teal-500 hover:text-teal-600 font-medium transition underline"
+                >
                   términos y condiciones
-                </a>
+                </button>
               </label>
             </div>
             {errors.aceptaTerminos && (
