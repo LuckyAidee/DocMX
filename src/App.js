@@ -8,6 +8,7 @@ import Layout from './components/layout/Layout';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import Dashboard from './pages/Dashboard';
 import OrderHistory from './pages/OrderHistory';
 import AddBalance from './pages/AddBalance';
@@ -35,7 +36,8 @@ function App() {
           {/* Rutas públicas sin Layout */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
           {/* Rutas protegidas con Layout persistente */}
           <Route element={
             <ProtectedRoute>

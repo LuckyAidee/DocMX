@@ -4,31 +4,12 @@ import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import CategoryHeroExtranjeros from '../components/shared/CategoryHeroExtranjeros';
 import ServiceCard from '../components/shared/ServiceCard';
+import { getServicesByCategory } from '../config/services.config';
 
 export default function ExtranjerosPage() {
   const navigate = useNavigate();
-  
-  // 2. DEFINIR LOS SERVICIOS DE EXTRANJEROS
-  const extranjerosServices = [
-    {
-      id: 1,
-      name: 'Carta de naturalización',
-      price: '1500.00', // Precio de ejemplo
-      deliveryTime: 'Trámite Especial',
-      documentType: 'carta-naturalizacion', // [cite: ServiceCard.js]
-      backgroundColor: '#475569', // Paleta Slate [cite: RFCPage.js]
-      path: '/servicio/carta-naturalizacion' // Ruta dinámica
-    },
-    {
-      id: 2,
-      name: 'Naturalizaciones mexicanas',
-      price: '1200.00', // Precio de ejemplo
-      deliveryTime: 'Trámite Especial',
-      documentType: 'naturalizaciones-mexicanas', // [cite: ServiceCard.js]
-      backgroundColor: '#334155', // Paleta Slate [cite: RFCPage.js]
-      path: '/servicio/naturalizaciones-mexicanas'
-    },
-  ];
+
+  const extranjerosServices = getServicesByCategory('Extranjeros');
 
   return (
     <motion.div

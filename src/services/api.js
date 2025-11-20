@@ -3,7 +3,7 @@ class ApiService {
     this.baseURL = process.env.REACT_APP_API_URL;
     // Solo log en desarrollo
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔗 API Service configurado con URL:', this.baseURL);
+      console.log('ðŸ”— API Service configurado con URL:', this.baseURL);
     }
     this.csrfToken = null;
     this._lastCsrfAttempt = 0;
@@ -15,7 +15,7 @@ class ApiService {
     const csrfHeader = await this.getCsrfHeaders();
 
     const config = {
-      credentials: 'include', // INCLUYE COOKIES AUTOMÁTICAMENTE
+      credentials: 'include', // INCLUYE COOKIES AUTOMÃTICAMENTE
       headers: {
         'Content-Type': 'application/json',
         ...csrfHeader,
@@ -26,23 +26,18 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      
-        if (!response.ok) {
-          // Manejo específico de errores de autenticación: convertir 401 en "no session"
-          if (response.status === 401) {
-            try {
-              this.handleUnauthorized();
-            } catch (e) {
-              // no-op
-            }
-            // Return null to indicate there is no authenticated session instead of throwing
-            return null;
-          }
-          const text = await response.text().catch(() => '');
-          let errorData = {};
-          try { errorData = text ? JSON.parse(text) : {}; } catch { errorData = { message: text }; }
-          throw new Error(errorData.message || `Error ${response.status}`);
+      if (!response.ok) {
+        // Treat 401 as an unauthenticated session (do not throw)
+        if (response.status === 401) {
+          try { this.handleUnauthorized(); } catch (e) { /* no-op */ }
+          return null;
         }
+
+        const text = await response.text().catch(() => '');
+        let errorData = {};
+        try { errorData = text ? JSON.parse(text) : {}; } catch { errorData = { message: text }; }
+        throw new Error(errorData.message || `Error ${response.status}`);
+      }
 
       const text = await response.text();
       if (!text) return null;
@@ -82,16 +77,16 @@ class ApiService {
   }
 
   handleUnauthorized() {
-    // Redirigir al login si no estamos ya allí
-    if (!window.location.pathname.includes('/login')) {
-      // Protect against multiple rapid redirects which can cause a reload loop.
-      const lastRedirect = sessionStorage.getItem('lastAuthRedirect') || 0;
-      const now = Date.now();
-      if (now - Number(lastRedirect) < 2000) return; // ignore if redirected very recently
-      sessionStorage.setItem('lastAuthRedirect', String(now));
-      // App routes expect login at '/', so redirect there.
-      window.location.href = '/';
-    }
+    const publicRoutes = ['/', '/login', '/register'];
+    const { pathname } = window.location;
+    if (publicRoutes.includes(pathname)) return;
+
+    // Protect against multiple rapid redirects which can cause a reload loop.
+    const lastRedirect = Number(sessionStorage.getItem('lastAuthRedirect') || 0);
+    const now = Date.now();
+    if (now - lastRedirect < 2000) return; // ignore if redirected very recently
+    sessionStorage.setItem('lastAuthRedirect', String(now));
+    window.location.href = '/';
   }
 
   // Auth endpoints actualizados
@@ -145,7 +140,7 @@ class ApiService {
     const path = qs.toString() ? `/orders?${qs.toString()}` : '/orders';
     const res = await this.request(path);
     // Backend returns a paginated object { data, page, limit, total, totalPages }
-    // Frontend OrderHistory expects an array of orders — unwrap for convenience.
+    // Frontend OrderHistory expects an array of orders â€” unwrap for convenience.
     if (res && typeof res === 'object' && Array.isArray(res.data)) {
       return res.data;
     }

@@ -1,7 +1,33 @@
-import React from 'react';
-import { Shield, FileText, CreditCard, PenTool, UserCheck, FileCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { Shield, FileText, CreditCard, PenTool, UserCheck, FileCheck, X, AlertCircle } from 'lucide-react';
 
 export default function AnnouncementBanner() {
+  // Estado para controlar qué "cara" mostrar: 'normal' o 'announcement'
+  const [currentView, setCurrentView] = useState('normal');
+
+  // ========================================================================
+  // SECCIÓN PARA FUTURA INTEGRACIÓN CON BACKEND
+  // ========================================================================
+  // TODO: Reemplazar con datos del backend
+  // - Conectar API para obtener anuncios dinámicos
+  // - Estructura esperada del backend:
+  //   {
+  //     id: string,
+  //     title: string,
+  //     message: string,
+  //     type: 'info' | 'warning' | 'maintenance' | 'new-feature',
+  //     isActive: boolean,
+  //     startDate: Date,
+  //     endDate: Date
+  //   }
+  // - Ejemplo de llamada:
+  //   const announcement = await apiService.getActiveAnnouncement();
+  //   if (announcement && announcement.isActive) {
+  //     setCurrentView('announcement'); // Activar vista de anuncios
+  //   }
+  // - Para testing manual, cambiar el estado inicial a 'announcement'
+  // ========================================================================
+
   const services = [
     { name: 'Actas', icon: FileText, position: 'top-12 left-[15%]', rotation: '-6', delay: '0s', color: 'teal' },
     { name: 'RFC', icon: CreditCard, position: 'top-8 right-[18%]', rotation: '8', delay: '0.5s', color: 'cyan' },
@@ -11,12 +37,64 @@ export default function AnnouncementBanner() {
     { name: 'Extranjeros', icon: UserCheck, position: 'bottom-14 right-[22%]', rotation: '-5', delay: '2.5s', color: 'cyan' }
   ];
 
+  // CARA 2: Vista de Anuncios
+  if (currentView === 'announcement') {
+    return (
+      <div className="group relative h-80 rounded-lg overflow-hidden shadow-2xl mb-6 bg-gradient-to-br from-orange-900 via-red-900 to-orange-900">
+
+        {/* Botón de cerrar (solo visible en vista de anuncios) */}
+        <button
+          onClick={() => setCurrentView('normal')}
+          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-300 group/close"
+          aria-label="Cerrar anuncio"
+        >
+          <X className="w-5 h-5 text-white/70 group-hover/close:text-white transition-colors duration-300" strokeWidth={2} />
+        </button>
+
+        {/* Glow ambiental para anuncios */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/10 to-transparent group-hover:via-orange-500/15 transition-all duration-700"></div>
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-900/40 via-transparent to-red-900/40"></div>
+
+        {/* Contenido del anuncio */}
+        <div className="relative h-full flex flex-col items-center justify-center z-10 px-8">
+
+          {/* Icono de alerta */}
+          <div className="mb-6">
+            <AlertCircle className="w-16 h-16 text-orange-400" strokeWidth={2} />
+          </div>
+
+          {/* Título del anuncio */}
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center">
+            Anuncio Importante
+          </h2>
+
+          {/* Mensaje del anuncio */}
+          <p className="text-lg md:text-xl text-gray-200 text-center max-w-2xl mb-6">
+            {/* TODO: Reemplazar con datos dinámicos del backend */}
+            Aquí aparecerá el mensaje del anuncio proveniente del backend.
+          </p>
+
+          {/* Badge del tipo de anuncio */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 backdrop-blur-md rounded-lg border border-orange-500/30">
+            <span className="text-orange-300 text-sm font-medium tracking-wide">Mantenimiento</span>
+          </div>
+        </div>
+
+        {/* Borde inferior */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/40 to-transparent"></div>
+      </div>
+    );
+  }
+
+  // CARA 1: Vista Normal (por defecto)
   return (
     <div className="group relative h-80 rounded-lg overflow-hidden shadow-2xl mb-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      
+
       {/* Glow ambiental sutil */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-teal-500/5 to-transparent group-hover:via-teal-500/8 transition-all duration-700"></div>
-      
+
       {/* Overlay con textura */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-transparent to-slate-900/40"></div>
       

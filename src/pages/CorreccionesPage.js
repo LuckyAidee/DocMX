@@ -4,58 +4,12 @@ import { motion } from 'framer-motion';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import CategoryHeroCorrecciones from '../components/shared/CategoryHeroCorrecciones';
 import ServiceCard from '../components/shared/ServiceCard';
+import { getServicesByCategory } from '../config/services.config';
 
 export default function CorreccionesPage() {
   const navigate = useNavigate();
-  
-  const correccionesServices = [
-    {
-      id: 1,
-      name: 'Corrección de CURP',
-      price: '300.00',
-      deliveryTime: '48 hrs',
-      documentType: 'correccion-curp',
-      backgroundColor: '#475569',
-      heightClass: "h-96",
-      path: '/servicio/correccion-curp'
-    },
-    {
-      id: 2,
-      name: 'Corrección de actas extemporáneas',
-      price: '450.00',
-      deliveryTime: '3-5 días',
-      documentType: 'correccion-extemporaneas',
-      backgroundColor: '#64748b',
-      path: '/servicio/correccion-actas-extemporaneas'
-    },
-    {
-      id: 3,
-      name: 'Corrección de acta de matrimonio',
-      price: '400.00',
-      deliveryTime: '48-72 hrs',
-      documentType: 'correccion-matrimonio',
-      backgroundColor: '#334155',
-      path: '/servicio/correccion-acta-matrimonio'
-    },
-    {
-      id: 4,
-      name: 'Corrección de acta de defunción',
-      price: '400.00',
-      deliveryTime: '48-72 hrs',
-      documentType: 'correccion-defuncion',
-      backgroundColor: '#1e293b',
-      path: '/servicio/correccion-acta-defuncion'
-    },
-    {
-      id: 5,
-      name: 'Correcciones de actas de nacimiento',
-      price: '380.00',
-      deliveryTime: '48 hrs',
-      documentType: 'correccion-nacimiento',
-      backgroundColor: '#0f172a',
-      path: '/servicio/correccion-acta-nacimiento'
-    }
-  ];
+
+  const correccionesServices = getServicesByCategory('Correcciones');
 
   return (
     <motion.div

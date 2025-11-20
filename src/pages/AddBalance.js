@@ -137,11 +137,11 @@ export default function AddBalance() {
     >
             {/* Breadcrumbs */}
             <div className="mb-0">
-              <Breadcrumbs 
+              <Breadcrumbs
                 items={[
                   { label: 'Home', path: '/dashboard' },
-                  { label: 'Agregar Saldo', path: '/balance' }
-                ]} 
+                  { label: 'Agregar Saldo', path: '/dashboard/add-balance' }
+                ]}
               />
             </div>
 

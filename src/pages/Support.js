@@ -7,7 +7,7 @@ export default function Support() {
   const [openFaq, setOpenFaq] = useState(null);
 
   const handleWhatsAppClick = () => {
-    window.open('https://wa.me/2221325766', '_blank');
+    window.open('https://wa.me/2221325766', '_blank', 'noopener,noreferrer');
   };
 
   const faqs = [
@@ -40,7 +40,7 @@ export default function Support() {
               <Breadcrumbs
                 items={[
                   { label: 'Home', path: '/dashboard' },
-                  { label: 'Soporte', path: '/support' },
+                  { label: 'Soporte', path: '/dashboard/support' },
                 ]}
               />
             </div>

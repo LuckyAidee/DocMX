@@ -19,14 +19,12 @@ export default function TopBar() {
     if (parts.length >= 2) {
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     }
-    
     return trimmedName.slice(0, 2).toUpperCase();
   };
 
   const initials = getInitials(user?.fullName);
 
   // Logout helper removed because it was unused; call `logout()` directly where needed.
-
   return (
     <header className="bg-white border-b border-gray-100 h-16 flex items-center justify-between px-8 fixed top-0 right-0 left-16 z-40 shadow-sm backdrop-blur-sm bg-white/95">
       

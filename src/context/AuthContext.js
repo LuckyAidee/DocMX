@@ -16,8 +16,41 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false); // Cambiado a false
+  const [loading, setLoading] = useState(true); // Iniciar en true para verificar sesión
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Verificar sesión al montar el componente
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔍 [AuthContext] Verificando sesión existente...');
+        }
+
+        // Intentar obtener el perfil del usuario (verifica cookie de sesión)
+        const userData = await apiService.getUserProfile();
+
+        if (userData) {
+          // Sesión válida encontrada
+          await updateUserState(userData);
+
+          if (process.env.NODE_ENV === 'development') {
+            console.log('✅ [AuthContext] Sesión restaurada exitosamente');
+          }
+        }
+      } catch (error) {
+        // No hay sesión válida o expiró
+        if (process.env.NODE_ENV === 'development') {
+          console.log('❌ [AuthContext] No hay sesión válida');
+        }
+        handleAuthFailure();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+  }, []); // Solo ejecutar al montar
 
 
   const updateUserState = async (userData) => {

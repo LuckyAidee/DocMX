@@ -9,7 +9,7 @@ export const servicesConfig = {
     svgKey: 'actaNacimiento',
     camposFormulario: ['curp'],
     esEspecializado: false,
-    colorAccent: '#14b8a6',
+    colorAccent: '#2d5016',
     breadcrumbs: [
       { label: 'Home', path: '/dashboard' },
       { label: 'Actas', path: '/actas' },
@@ -111,7 +111,7 @@ export const servicesConfig = {
     svgKey: 'eFirma',
     camposFormulario: null,
     esEspecializado: true,
-    colorAccent: '#6a1b9a',
+    colorAccent: '#1565c0',
     breadcrumbs: [
       { label: 'Home', path: '/dashboard' },
       { label: 'RFC', path: '/rfc' },
@@ -128,7 +128,7 @@ export const servicesConfig = {
     svgKey: 'modificacionesCsf',
     camposFormulario: null,
     esEspecializado: true,
-    colorAccent: '#d84315',
+    colorAccent: '#e65100',
     breadcrumbs: [
       { label: 'Home', path: '/dashboard' },
       { label: 'RFC', path: '/rfc' },
@@ -142,7 +142,7 @@ export const servicesConfig = {
     precio: 15.00,
     tiempoEntrega: '20 Minutos',
     descripcion: 'Unifica registros duplicados de CURP. Trámite especializado con RENAPO.',
-    svgKey: 'unificacionCurp',
+    svgKey: 'curpUnificacion',
     camposFormulario: null,
     esEspecializado: true,
     colorAccent: '#2e7d32',
@@ -159,7 +159,7 @@ export const servicesConfig = {
     precio: 15.00,
     tiempoEntrega: '20 Minutos',
     descripcion: 'Tramita la baja de un CURP duplicado o erróneo.',
-    svgKey: 'bajaCurp',
+    svgKey: 'curpBaja',
     camposFormulario: ['curp'],
     esEspecializado: false,
     colorAccent: '#c62828',
@@ -176,7 +176,7 @@ export const servicesConfig = {
     precio: 15.00,
     tiempoEntrega: '20 Minutos',
     descripcion: 'Tramita el alta de tu CURP por primera vez o reactiva uno existente.',
-    svgKey: 'altaCurp',
+    svgKey: 'curpAlta',
     camposFormulario: ['curp'],
     esEspecializado: false,
     colorAccent: '#1565c0',
@@ -193,10 +193,10 @@ export const servicesConfig = {
     precio: 15.00,
     tiempoEntrega: '20 Minutos',
     descripcion: 'Descarga tu documento oficial de CURP de manera inmediata.',
-    svgKey: 'descargarCurp',
+    svgKey: 'curpDescargar',
     camposFormulario: ['curp'],
     esEspecializado: false,
-    colorAccent: '#0097a7',
+    colorAccent: '#1565c0',
     breadcrumbs: [
       { label: 'Home', path: '/dashboard' },
       { label: 'CURP', path: '/curp' },
@@ -210,10 +210,10 @@ export const servicesConfig = {
     precio: 15.00,
     tiempoEntrega: '20 Minutos',
     descripcion: 'Obtén tu CURP certificado con validez oficial.',
-    svgKey: 'certificacionCurp',
+    svgKey: 'curpCertificacion',
     camposFormulario: ['curp'],
     esEspecializado: false,
-    colorAccent: '#00897b',
+    colorAccent: '#e65100',
     breadcrumbs: [
       { label: 'Home', path: '/dashboard' },
       { label: 'CURP', path: '/curp' },
@@ -247,7 +247,7 @@ export const servicesConfig = {
     svgKey: 'correccionExtemporanea',
     camposFormulario: null,
     esEspecializado: true,
-    colorAccent: '#e65100',
+    colorAccent: '#ad1457',
     breadcrumbs: [
       { label: 'Home', path: '/dashboard' },
       { label: 'Correcciones', path: '/correcciones' },
@@ -281,7 +281,7 @@ export const servicesConfig = {
     svgKey: 'correccionDefuncion',
     camposFormulario: null,
     esEspecializado: true,
-    colorAccent: '#d84315',
+    colorAccent: '#f57c00',
     breadcrumbs: [
       { label: 'Home', path: '/dashboard' },
       { label: 'Correcciones', path: '/correcciones' },
@@ -339,4 +339,23 @@ export const servicesConfig = {
       { label: 'Naturalizaciones Mexicanas', path: '/servicio/naturalizaciones-mexicanas' }
     ]
   }
+};
+
+// Helper para obtener servicios por categoría (mapeado al formato de ServiceCard)
+export const getServicesByCategory = (categoria) => {
+  // Paleta de grises slate escalados para fondos de tarjetas
+  const slateColors = ['#475569', '#64748b', '#334155', '#1e293b', '#0f172a'];
+
+  return Object.values(servicesConfig)
+    .filter(service => service.categoria === categoria)
+    .map((service, index) => ({
+      id: index + 1,
+      name: service.nombre,
+      price: service.precio.toFixed(2),
+      deliveryTime: service.tiempoEntrega,
+      documentType: service.svgKey,
+      backgroundColor: slateColors[index % slateColors.length],
+      heightClass: index === 0 ? 'h-96' : undefined,
+      path: `/servicio/${service.id}`
+    }));
 };

@@ -6,7 +6,7 @@ import { Clock, DollarSign, FileText, ShoppingCart, Shield, CheckCircle, AlertCi
 import { useAuth } from '../../context/AuthContext';
 import { apiService } from '../../services/api';
 import { servicesConfig } from '../../config/services.config';
-import { DocumentSVGs } from '../../pages/service/DocumentSVGs';
+import { DocumentSVGs } from '../../components/shared/ServiceCard';
 import ServiceForms from '../../pages/service/ServiceForms';
 import { queryClient } from '../../services/queryClient';
 
@@ -16,7 +16,8 @@ export default function ServiceDetail() {
   const { user, updateUser } = useAuth();
   const [formData, setFormData] = useState({ curp: '', rfc: '', idcif: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+  const [globalError, setGlobalError] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const servicio = servicesConfig[serviceId];
@@ -37,45 +38,72 @@ export default function ServiceDetail() {
     );
   }
 
+  // Funciones de validación de campos
+  const isValidCURP = (curp) => {
+    if (curp.length !== 18) return false;
+    const curpRegex = /^[A-Z]{4}\d{6}[A-Z]{6}[A-Z0-9]{2}$/;
+    return curpRegex.test(curp);
+  };
+
+  const isValidRFC = (rfc) => {
+    if (!rfc || rfc.trim().length === 0) return false;
+    // RFC persona física: 13 caracteres (AAAA000000XXX)
+    // RFC persona moral: 12 caracteres (AAA000000XXX)
+    const rfcRegex = /^[A-ZÑ&]{3,4}\d{6}[A-V1-9][A-Z0-9]{2}$/;
+    return (rfc.length === 12 || rfc.length === 13) && rfcRegex.test(rfc);
+  };
+
+  const isValidIDCIF = (idcif) => {
+    if (!idcif || idcif.trim().length === 0) return false;
+    // IdCIF: alfanumérico de 8 a 13 caracteres
+    if (idcif.length < 8 || idcif.length > 13) return false;
+    const idcifRegex = /^[A-Z0-9]{8,13}$/;
+    return idcifRegex.test(idcif);
+  };
+
   const handlePurchase = async () => {
-    if (servicio.esEspecializado) {
-      if (user.balance < servicio.precio) {
-        setError('Saldo insuficiente. Por favor recarga tu cuenta.');
-        return;
-      }
-    } else {
+    // Validar saldo
+    if (user.balance < servicio.precio) {
+      setGlobalError('Saldo insuficiente. Por favor recarga tu cuenta.');
+      return;
+    }
+
+    // Para servicios no especializados, verificar que no haya errores en los campos
+    if (!servicio.esEspecializado && servicio.camposFormulario && servicio.camposFormulario.length > 0) {
+      const newErrors = {};
+
       if (servicio.camposFormulario.includes('curp')) {
         if (!formData.curp.trim()) {
-          setError('Por favor ingresa tu CURP');
-          return;
-        }
-        if (formData.curp.length !== 18) {
-          setError('El CURP debe tener 18 caracteres');
-          return;
+          newErrors.curp = 'Este campo es obligatorio';
+        } else if (!isValidCURP(formData.curp)) {
+          newErrors.curp = 'El formato ingresado no es válido';
         }
       }
 
       if (servicio.camposFormulario.includes('rfc')) {
         if (!formData.rfc.trim()) {
-          setError('Por favor ingresa tu RFC');
-          return;
+          newErrors.rfc = 'Este campo es obligatorio';
+        } else if (!isValidRFC(formData.rfc)) {
+          newErrors.rfc = 'El formato ingresado no es válido';
         }
       }
 
       if (servicio.camposFormulario.includes('idcif')) {
         if (!formData.idcif.trim()) {
-          setError('Por favor ingresa tu IdCIF');
-          return;
+          newErrors.idcif = 'Este campo es obligatorio';
+        } else if (!isValidIDCIF(formData.idcif)) {
+          newErrors.idcif = 'El formato ingresado no es válido';
         }
       }
 
-      if (user.balance < servicio.precio) {
-        setError('Saldo insuficiente. Por favor recarga tu cuenta.');
+      // Si hay errores, actualizar el estado y detener
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
         return;
       }
     }
 
-    setError('');
+    setGlobalError('');
     setIsLoading(true);
 
     try {
@@ -100,9 +128,7 @@ export default function ServiceDetail() {
       }
 
       try {
-        // Use apiService to fetch the current profile from the backend
-        // instead of a relative fetch to `/api/...` which hits the dev server
-        // (and returns HTML) causing a JSON parse error.
+        // Refresh profile from backend; if null/empty, fallback to local balance update
         const updatedUser = await apiService.getUserProfile();
         if (updatedUser) {
           updateUser(updatedUser);
@@ -113,7 +139,7 @@ export default function ServiceDetail() {
       } catch (userError) {
         console.error('❌ Error al actualizar usuario:', userError);
         // Fallback: actualizar solo el balance localmente
-        const newBalance = (user && user.balance) ? user.balance - servicio.precio : undefined;
+        const newBalance = (user && typeof user.balance === 'number') ? user.balance - servicio.precio : undefined;
         if (newBalance !== undefined) updateUser({ ...user, balance: newBalance });
       }
 
@@ -121,7 +147,7 @@ export default function ServiceDetail() {
 
     } catch (err) {
       console.error('Error creando orden:', err);
-      setError(err.message || 'Error al procesar la compra. Intenta nuevamente.');
+      setGlobalError(err.message || 'Error al procesar la compra. Intenta nuevamente.');
     } finally {
       setIsLoading(false);
     }
@@ -132,18 +158,41 @@ export default function ServiceDetail() {
     navigate('/dashboard/orders');
   };
 
-  const isValidCURP = (curp) => {
-    if (curp.length !== 18) return false;
-    const curpRegex = /^[A-Z]{4}\d{6}[A-Z]{6}[A-Z0-9]{2}$/;
-    return curpRegex.test(curp);
+  // Función para validar todos los campos requeridos
+  const validateAllFields = () => {
+    // Si es servicio especializado, solo verificar saldo
+    if (servicio.esEspecializado) {
+      return user.balance >= servicio.precio;
+    }
+
+    // Validar cada campo requerido directamente desde formData
+    // No dependemos del objeto errors porque solo se llena cuando el usuario interactúa
+    if (servicio.camposFormulario && servicio.camposFormulario.length > 0) {
+      for (const campo of servicio.camposFormulario) {
+        if (campo === 'curp') {
+          if (!formData.curp || !isValidCURP(formData.curp)) {
+            return false;
+          }
+        }
+        if (campo === 'rfc') {
+          if (!formData.rfc || !isValidRFC(formData.rfc)) {
+            return false;
+          }
+        }
+        if (campo === 'idcif') {
+          if (!formData.idcif || !isValidIDCIF(formData.idcif)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Finalmente, verificar saldo
+    return user.balance >= servicio.precio;
   };
 
-  const DocumentSVG = DocumentSVGs[servicio.svgKey];
-  const canPurchase = servicio.esEspecializado 
-    ? user.balance >= servicio.precio
-    : (servicio.camposFormulario.includes('curp') 
-        ? formData.curp.length === 18 && isValidCURP(formData.curp) && user.balance >= servicio.precio
-        : user.balance >= servicio.precio);
+  const DocumentSVG = DocumentSVGs[servicio.svgKey] || DocumentSVGs.actaNacimiento;
+  const canPurchase = validateAllFields();
 
   const hexToRgb = (hex) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -312,33 +361,34 @@ export default function ServiceDetail() {
 
                   <div className="space-y-6">
                     
-                    <ServiceForms 
+                    <ServiceForms
                       camposFormulario={servicio.camposFormulario}
                       formData={formData}
                       setFormData={(data) => {
                         setFormData(data);
-                        setError('');
+                        setGlobalError('');
                       }}
-                      error={error}
+                      errors={errors}
+                      setErrors={setErrors}
                       esEspecializado={servicio.esEspecializado}
                       mensajeEspecializado={servicio.mensajeEspecializado}
                     />
 
-                    {error && (
+                    {globalError && (
                       <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
                         <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
-                        <p className="text-sm text-red-700 font-medium">{error}</p>
+                        <p className="text-sm text-red-700 font-medium">{globalError}</p>
                       </div>
                     )}
-                    
-                    {!servicio.esEspecializado && servicio.camposFormulario.includes('curp') && formData.curp.length === 18 && isValidCURP(formData.curp) && !error && (
+
+                    {!servicio.esEspecializado && servicio.camposFormulario.includes('curp') && formData.curp.length === 18 && isValidCURP(formData.curp) && !errors.curp && !globalError && (
                       <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
                         <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
                         <p className="text-sm text-green-700 font-medium">CURP válido - Listo para continuar</p>
                       </div>
                     )}
 
-                    {!servicio.esEspecializado && servicio.camposFormulario.includes('curp') && formData.curp.length > 0 && formData.curp.length < 18 && !error && (
+                    {!servicio.esEspecializado && servicio.camposFormulario.includes('curp') && formData.curp.length > 0 && formData.curp.length < 18 && !errors.curp && !globalError && (
                       <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
                         <span className="font-semibold">{formData.curp.length}/18</span> caracteres ingresados
                       </p>
