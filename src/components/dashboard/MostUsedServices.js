@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+﻿import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ServiceCard from '../shared/ServiceCard';
 import { useQuery } from '@tanstack/react-query';
@@ -6,226 +6,50 @@ import { apiService } from '../../services/api';
 import { servicesConfig } from '../../config/services.config';
 
 const DEFAULT_SERVICES = [
-  import React, { useEffect, useState, useMemo } from 'react';
-  import { useNavigate } from 'react-router-dom';
-  import ServiceCard from '../shared/ServiceCard';
-  import { useQuery } from '@tanstack/react-query';
-  import { apiService } from '../../services/api';
-  import { servicesConfig } from '../../config/services.config';
+  'acta-nacimiento',
+  'curp',
+  'acta-matrimonio',
+  'constancia-fiscal-rfc',
+  'acta-defuncion',
+  'correccion-acta-nacimiento',
+  'carta-naturalizacion',
+];
 
-  const DEFAULT_SERVICES = [
-    import React, { useEffect, useState, useMemo } from 'react';
-    import { useNavigate } from 'react-router-dom';
-    import ServiceCard from '../shared/ServiceCard';
-    import { useQuery } from '@tanstack/react-query';
-    import { apiService } from '../../services/api';
-    import { servicesConfig } from '../../config/services.config';
+const gradientColors = [
+  'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+  'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)',
+  'linear-gradient(135deg, #0f172a 0%, #115e59 100%)',
+  'linear-gradient(135deg, #334155 0%, #164e63 100%)',
+  'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #134e4a 100%)',
+  'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+  'linear-gradient(135deg, #164e63 0%, #1e293b 100%)',
+  'linear-gradient(135deg, #115e59 0%, #0f172a 100%)'
+];
 
-    const DEFAULT_SERVICES = [
-      'acta-nacimiento',
-      'curp',
-      'acta-matrimonio',
-      'constancia-fiscal-rfc',
-      'acta-defuncion',
-      'correccion-acta-nacimiento',
-      'carta-naturalizacion',
-    ];
+export default function MostUsedServices() {
+  const navigate = useNavigate();
 
-    const gradientColors = [
-      'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-      'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)',
-      'linear-gradient(135deg, #0f172a 0%, #115e59 100%)',
-      'linear-gradient(135deg, #334155 0%, #164e63 100%)',
-      'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #134e4a 100%)',
-      'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
-      'linear-gradient(135deg, #164e63 0%, #1e293b 100%)',
-      'linear-gradient(135deg, #115e59 0%, #0f172a 100%)'
-    ];
-
-    export default function MostUsedServices() {
-      const navigate = useNavigate();
-
-      const { data: orders = [], isLoading } = useQuery({
-        queryKey: ['orders', 'mostUsed'],
-        queryFn: () => apiService.getUserOrders({ limit: 200 }),
-        staleTime: 60_000,
-        cacheTime: 5 * 60_000,
-      });
-
-      const allServices = useMemo(
-        () =>
-          Object.values(servicesConfig).map((service, index) => ({
-            id: service.id || service.svgKey || index,
-            name: service.nombre,
-            price: typeof service.precio === 'number' ? service.precio.toFixed(2) : service.precio || '',
-            deliveryTime: service.tiempoEntrega,
-            documentType: service.svgKey || service.id,
-            backgroundColor: gradientColors[index % gradientColors.length],
-            serviceId: service.id || service.svgKey || index,
-          })),
-        []
-      );
-
-      const freq = useMemo(() => {
-        const map = new Map();
-        (orders || []).forEach((o) => {
-          const key = o.documentType || 'unknown';
-          map.set(key, (map.get(key) || 0) + 1);
-        });
-        return map;
-      }, [orders]);
-
-      const topServiceIds = useMemo(() => {
-        const limit = 8;
-        if (!freq.size) return DEFAULT_SERVICES.slice(0, limit);
-        const arr = Array.from(freq.entries()).sort((a, b) => b[1] - a[1]).map((e) => e[0]);
-        const resolved = Array.from(
-          new Set(
-            arr.map((id) => {
-              if (servicesConfig[id]) return id;
-              const found = Object.keys(servicesConfig).find((k) => k.includes(id));
-              return found || id;
-            })
-          )
-        ).filter(Boolean);
-        const result = [...resolved];
-        for (const def of DEFAULT_SERVICES) {
-          if (result.length >= limit) break;
-          if (!result.includes(def)) result.push(def);
-        }
-        return result.slice(0, limit);
-      }, [freq]);
-
-      const servicesFromOrders = useMemo(
-        () =>
-          topServiceIds.map((sid, idx) => {
-            const cfg = servicesConfig[sid] || servicesConfig[Object.keys(servicesConfig).find((k) => k.includes(sid))] || {};
-            return {
-              id: sid || `svc-${idx}`,
-              name: cfg.nombre || sid,
-              price: cfg.precio || '',
-              deliveryTime: cfg.tiempoEntrega || '',
-              backgroundColor: cfg.colorAccent || gradientColors[idx % gradientColors.length],
-              documentType: sid,
-              serviceId: cfg.id || sid,
-            };
-          }),
-        [topServiceIds]
-      );
-
-      const [services, setServices] = useState([]);
-      useEffect(() => {
-        const stored = sessionStorage.getItem('mostUsedServices');
-        if (stored) {
-          try {
-            setServices(JSON.parse(stored));
-            return;
-          } catch (e) {
-            // ignore parse error
-          }
-        }
-        const shuffled = [...allServices].sort(() => Math.random() - 0.5).slice(0, 8);
-        setServices(shuffled);
-        try { sessionStorage.setItem('mostUsedServices', JSON.stringify(shuffled)); } catch (e) {}
-      }, [allServices]);
-
-      const servicesToShow = (orders && orders.length > 0) ? servicesFromOrders : services;
-
-      const scrollToCategoryNav = () => {
-        const categoryNav = document.getElementById('category-nav');
-        if (categoryNav) {
-          categoryNav.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          categoryNav.style.transform = 'scale(1.03)';
-          const buttons = categoryNav.querySelectorAll('button');
-          const lines = categoryNav.querySelectorAll('button > div');
-          buttons.forEach((button) => { if (!button.classList.contains('text-teal-600')) button.style.color = '#0d9488'; });
-          lines.forEach((line) => { if (!line.style.width || line.style.width === '0px') line.style.width = '75%'; });
-          setTimeout(() => {
-            categoryNav.style.transform = 'scale(1)';
-            buttons.forEach((button) => { if (!button.classList.contains('text-teal-600')) button.style.color = ''; });
-            lines.forEach((line) => { if (line.classList.contains('w-0')) line.style.width = ''; });
-          }, 1000);
-        }
-      };
-
-      if (isLoading && (!orders || orders.length === 0) && (!services || services.length === 0)) {
-        return (
-          <section className="mb-16">
-            <div className="mb-10">
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent to-teal-500"></div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">Tus más usados</h2>
-                </div>
-                <div className="h-px w-12 bg-gradient-to-l from-transparent to-teal-500"></div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-44 rounded-2xl bg-gradient-to-r from-gray-800 to-gray-700 animate-pulse" />
-              ))}
-            </div>
-          </section>
-        );
-      }
-
-      return (
-        <section className="mb-16">
-          <div className="mt-1 mb-8">
-            <div className="flex items-center justify-center">
-              <h2 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">Tus más usados</h2>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {servicesToShow.map((service) => (
-              <div
-                key={service.id}
-                onClick={() => navigate(`/servicio/${service.serviceId}`)}
-                className="cursor-pointer h-full"
-              >
-                <ServiceCard
-                  name={service.name}
-                  price={service.price}
-                  deliveryTime={service.deliveryTime}
-                  documentType={service.documentType}
-                  backgroundColor={service.backgroundColor}
-                  heightClass="h-72"
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-10 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-200">
-              <span className="text-sm text-gray-600">¿No encuentras lo que buscas?</span>
-              <button
-                onClick={scrollToCategoryNav}
-                className="text-sm font-semibold text-teal-600 hover:text-teal-700 transition-colors ml-2"
-              >
-                Ver todos los servicios
-              </button>
-            </div>
-          </div>
-        </section>
-      );
-    }
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ['orders', 'mostUsed'],
+    queryFn: () => apiService.getUserOrders({ limit: 200 }),
     staleTime: 60_000,
     cacheTime: 5 * 60_000,
   });
 
-  // Build generic services list from config
-  const allServices = useMemo(() => Object.values(servicesConfig).map((service, index) => ({
-    id: service.id || service.svgKey || index,
-    name: service.nombre,
-    price: typeof service.precio === 'number' ? service.precio.toFixed(2) : (service.precio || ''),
-    deliveryTime: service.tiempoEntrega,
-    documentType: service.svgKey || service.id,
-    backgroundColor: gradientColors[index % gradientColors.length],
-    serviceId: service.id || service.svgKey || index,
-  })), []);
+  const allServices = useMemo(
+    () =>
+      Object.values(servicesConfig).map((service, index) => ({
+        id: service.id || service.svgKey || index,
+        name: service.nombre,
+        price: typeof service.precio === 'number' ? service.precio.toFixed(2) : service.precio || '',
+        deliveryTime: service.tiempoEntrega,
+        documentType: service.svgKey || service.id,
+        backgroundColor: gradientColors[index % gradientColors.length],
+        serviceId: service.id || service.svgKey || index,
+      })),
+    []
+  );
 
-  // Frequency map of documentType from orders
   const freq = useMemo(() => {
     const map = new Map();
     (orders || []).forEach((o) => {
@@ -235,16 +59,19 @@ const DEFAULT_SERVICES = [
     return map;
   }, [orders]);
 
-  // Derive top service ids from orders
   const topServiceIds = useMemo(() => {
     const limit = 8;
     if (!freq.size) return DEFAULT_SERVICES.slice(0, limit);
-    const arr = Array.from(freq.entries()).sort((a, b) => b[1] - a[1]).map(e => e[0]);
-    const resolved = Array.from(new Set(arr.map(id => {
-      if (servicesConfig[id]) return id;
-      const found = Object.keys(servicesConfig).find(k => k.includes(id));
-      return found || id;
-    }))).filter(Boolean);
+    const arr = Array.from(freq.entries()).sort((a, b) => b[1] - a[1]).map((e) => e[0]);
+    const resolved = Array.from(
+      new Set(
+        arr.map((id) => {
+          if (servicesConfig[id]) return id;
+          const found = Object.keys(servicesConfig).find((k) => k.includes(id));
+          return found || id;
+        })
+      )
+    ).filter(Boolean);
     const result = [...resolved];
     for (const def of DEFAULT_SERVICES) {
       if (result.length >= limit) break;
@@ -253,21 +80,23 @@ const DEFAULT_SERVICES = [
     return result.slice(0, limit);
   }, [freq]);
 
-  // Build final services to show: prefer analytics (orders) else sessionStorage/random
-  const servicesFromOrders = useMemo(() => topServiceIds.map((sid, idx) => {
-    const cfg = servicesConfig[sid] || servicesConfig[Object.keys(servicesConfig).find(k => k.includes(sid))] || {};
-    return {
-      id: sid || `svc-${idx}`,
-      name: cfg.nombre || sid,
-      price: cfg.precio || '',
-      deliveryTime: cfg.tiempoEntrega || '',
-      backgroundColor: cfg.colorAccent || gradientColors[idx % gradientColors.length],
-      documentType: sid,
-      serviceId: cfg.id || sid,
-    };
-  }), [topServiceIds]);
+  const servicesFromOrders = useMemo(
+    () =>
+      topServiceIds.map((sid, idx) => {
+        const cfg = servicesConfig[sid] || servicesConfig[Object.keys(servicesConfig).find((k) => k.includes(sid))] || {};
+        return {
+          id: sid || `svc-${idx}`,
+          name: cfg.nombre || sid,
+          price: cfg.precio || '',
+          deliveryTime: cfg.tiempoEntrega || '',
+          backgroundColor: cfg.colorAccent || gradientColors[idx % gradientColors.length],
+          documentType: sid,
+          serviceId: cfg.id || sid,
+        };
+      }),
+    [topServiceIds]
+  );
 
-  // SessionStorage/random fallback
   const [services, setServices] = useState([]);
   useEffect(() => {
     const stored = sessionStorage.getItem('mostUsedServices');
@@ -293,158 +122,59 @@ const DEFAULT_SERVICES = [
       categoryNav.style.transform = 'scale(1.03)';
       const buttons = categoryNav.querySelectorAll('button');
       const lines = categoryNav.querySelectorAll('button > div');
-      buttons.forEach(button => { if (!button.classList.contains('text-teal-600')) button.style.color = '#0d9488'; });
-      lines.forEach(line => { if (!line.style.width || line.style.width === '0px') line.style.width = '75%'; });
+      buttons.forEach((button) => { if (!button.classList.contains('text-teal-600')) button.style.color = '#0d9488'; });
+      lines.forEach((line) => { if (!line.style.width || line.style.width === '0px') line.style.width = '75%'; });
       setTimeout(() => {
         categoryNav.style.transform = 'scale(1)';
-        buttons.forEach(button => { if (!button.classList.contains('text-teal-600')) button.style.color = ''; });
-        lines.forEach(line => { if (line.classList.contains('w-0')) line.style.width = ''; });
-      }, 1000);
-    }
-  };
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ServiceCard from '../shared/ServiceCard';
-import { servicesConfig } from '../../config/services.config';
-
-export default function MostUsedServices() {
-  const navigate = useNavigate();
-
-  const scrollToCategoryNav = () => {
-    const categoryNav = document.getElementById('category-nav');
-    if (categoryNav) {
-      // Scroll suave hacia CategoryNav
-      categoryNav.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-      // Aplicar efecto de escala
-      categoryNav.style.transform = 'scale(1.03)';
-
-      // Aplicar efecto hover a todos los botones (texto verde y líneas verdes)
-      const buttons = categoryNav.querySelectorAll('button');
-      const lines = categoryNav.querySelectorAll('button > div');
-
-      buttons.forEach(button => {
-        if (!button.classList.contains('text-teal-600')) {
-          button.style.color = '#0d9488'; // teal-600
-        }
-      });
-
-      lines.forEach(line => {
-        if (!line.style.width || line.style.width === '0px') {
-          line.style.width = '75%';
-        }
-      });
-
-      // Quitar el efecto después de 1 segundo
-      setTimeout(() => {
-        categoryNav.style.transform = 'scale(1)';
-
-        buttons.forEach(button => {
-          if (!button.classList.contains('text-teal-600')) {
-            button.style.color = '';
-          }
-        });
-
-        lines.forEach(line => {
-          if (line.classList.contains('w-0')) {
-            line.style.width = '';
-          }
-        });
+        buttons.forEach((button) => { if (!button.classList.contains('text-teal-600')) button.style.color = ''; });
+        lines.forEach((line) => { if (line.classList.contains('w-0')) line.style.width = ''; });
       }, 1000);
     }
   };
 
-  // Paleta de gradientes slate con toques teal/cyan (combina con AnnouncementBanner)
-  const gradientColors = [
-    'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',           // slate-900 to slate-800
-    'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)', // slate-800 via slate-700
-    'linear-gradient(135deg, #0f172a 0%, #115e59 100%)',           // slate-900 to teal-800
-    'linear-gradient(135deg, #334155 0%, #164e63 100%)',           // slate-700 to cyan-900
-    'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #134e4a 100%)', // slate-800 via slate-900 to teal-900
-    'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)', // slate-900 via slate-800
-    'linear-gradient(135deg, #164e63 0%, #1e293b 100%)',           // cyan-900 to slate-800
-    'linear-gradient(135deg, #115e59 0%, #0f172a 100%)'            // teal-800 to slate-900
-  ];
->>>>>>> 4be3b18d945795aa91f2bb92d93afa4e55ed27af
-
-  // Generar lista de servicios desde servicesConfig
-  const allServices = Object.values(servicesConfig).map((service, index) => ({
-    id: index + 1,
-    name: service.nombre,
-    price: service.precio.toFixed(2),
-    deliveryTime: service.tiempoEntrega,
-    documentType: service.svgKey,
-    backgroundColor: gradientColors[index % gradientColors.length],
-    serviceId: service.id
-  }));
-
-  // Estado para los servicios mostrados
-  const [services, setServices] = useState([]);
-
-  useEffect(() => {
-    // Función para obtener 8 servicios aleatorios
-    const getRandomServices = () => {
-      const shuffled = [...allServices].sort(() => Math.random() - 0.5);
-      return shuffled.slice(0, 8);
-    };
-
-    // Intentar cargar desde sessionStorage
-    const storedServices = sessionStorage.getItem('mostUsedServices');
-
-    if (storedServices) {
-      setServices(JSON.parse(storedServices));
-    } else {
-      // Si no existen, generar nuevos aleatorios y guardarlos
-      const randomServices = getRandomServices();
-      setServices(randomServices);
-      sessionStorage.setItem('mostUsedServices', JSON.stringify(randomServices));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  if (isLoading && (!orders || orders.length === 0) && (!services || services.length === 0)) {
+    return (
+      <section className="mb-16">
+        <div className="mb-10">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-teal-500"></div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">Tus más usados</h2>
+            </div>
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-teal-500"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-44 rounded-2xl bg-gradient-to-r from-gray-800 to-gray-700 animate-pulse" />
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mb-16">
       <div className="mt-1 mb-8">
         <div className="flex items-center justify-center">
-          <h2 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">
-            Tus más usados
-          </h2>
+          <h2 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">Tus más usados</h2>
         </div>
       </div>
 
-<<<<<<< HEAD
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-        {servicesToShow.map((service, index) => (
-          <div key={service.id} className="h-full">
-=======
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {services.map((service) => (
+        {servicesToShow.map((service) => (
           <div
             key={service.id}
             onClick={() => navigate(`/servicio/${service.serviceId}`)}
-            className="cursor-pointer"
+            className="cursor-pointer h-full"
           >
->>>>>>> 4be3b18d945795aa91f2bb92d93afa4e55ed27af
             <ServiceCard
               name={service.name}
               price={service.price}
               deliveryTime={service.deliveryTime}
               documentType={service.documentType}
               backgroundColor={service.backgroundColor}
-<<<<<<< HEAD
               heightClass="h-72"
-              onClick={() => {
-                // Navigate to the service detail (menu servicio)
-                // service.id is expected to match the route param used by ServiceDetail
-                try {
-                  navigate(`/servicio/${service.id}`);
-                } catch (e) {
-                  // fallback: set location.href
-                  window.location.href = `/servicio/${service.id}`;
-                }
-              }}
-=======
->>>>>>> 4be3b18d945795aa91f2bb92d93afa4e55ed27af
             />
           </div>
         ))}
@@ -452,18 +182,10 @@ export default function MostUsedServices() {
 
       <div className="mt-10 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-200">
-<<<<<<< HEAD
           <span className="text-sm text-gray-600">¿No encuentras lo que buscas?</span>
           <button
-            onClick={() => navigate('/servicios')}
-=======
-          <span className="text-sm text-gray-600">
-            ¿No encuentras lo que buscas?
-          </span>
-          <button
             onClick={scrollToCategoryNav}
->>>>>>> 4be3b18d945795aa91f2bb92d93afa4e55ed27af
-            className="text-sm font-semibold text-teal-600 hover:text-teal-700 transition-colors"
+            className="text-sm font-semibold text-teal-600 hover:text-teal-700 transition-colors ml-2"
           >
             Ver todos los servicios
           </button>
