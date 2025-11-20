@@ -85,11 +85,15 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       try {
         const profile = await apiService.getUserProfile();
+        // apiService.getUserProfile may return null when there is no valid session (e.g. 401)
         if (profile && mounted) {
           await updateUserState(profile);
+        } else if (mounted) {
+          // No hay sesión: limpiar estado sin lanzar excepciones
+          handleAuthFailure();
         }
       } catch (e) {
-        if (process.env.NODE_ENV === 'development') console.log('[AuthContext] No session to restore');
+        if (process.env.NODE_ENV === 'development') console.log('[AuthContext] No session to restore', e);
         handleAuthFailure();
       } finally {
         if (mounted) setLoading(false);

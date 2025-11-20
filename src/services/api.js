@@ -27,26 +27,31 @@ class ApiService {
     try {
       const response = await fetch(url, config);
       
-      if (!response.ok) {
-        // Manejo específico de errores de autenticación
-        if (response.status === 401) {
-          this.handleUnauthorized();
-          throw new Error('Sesión expirada o inválida');
+        if (!response.ok) {
+          // Manejo específico de errores de autenticación: convertir 401 en "no session"
+          if (response.status === 401) {
+            try {
+              this.handleUnauthorized();
+            } catch (e) {
+              // no-op
+            }
+            // Return null to indicate there is no authenticated session instead of throwing
+            return null;
+          }
+          const text = await response.text().catch(() => '');
+          let errorData = {};
+          try { errorData = text ? JSON.parse(text) : {}; } catch { errorData = { message: text }; }
+          throw new Error(errorData.message || `Error ${response.status}`);
         }
-        const text = await response.text().catch(() => '');
-        let errorData = {};
-        try { errorData = text ? JSON.parse(text) : {}; } catch { errorData = { message: text }; }
-        throw new Error(errorData.message || `Error ${response.status}`);
-      }
 
       const text = await response.text();
       if (!text) return null;
       try { return JSON.parse(text); } catch { return text; }
     } catch (error) {
       // Solo log en desarrollo
-      if (process.env.NODE_ENV === 'development') {
-        console.error('API Error:', error);
-      }
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('API Error:', error);
+        }
       throw error;
     }
   }
