@@ -34,6 +34,11 @@ function LoginPage() {
         password, 
         rememberMe 
       });
+
+      // apiService.login may return null when the backend responds 401/no-session
+      if (!response) {
+        throw new Error('Credenciales incorrectas o no autorizado');
+      }
     
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
