@@ -99,10 +99,16 @@ export default function AddBalance() {
     try {
       // Lazy-import apiService to avoid circular deps
       const { apiService } = await import('../services/api');
-      await apiService.request('/transfers', {
+      const res = await apiService.request('/transfers', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
+
+      // apiService.request may return null for 401/no-session; ensure we received a success response
+      if (!res) {
+        throw new Error('No autorizado o error en la solicitud');
+      }
+
       setModalData({
         title: 'Solicitud enviada',
         message: 'Tu solicitud de recarga fue recibida. Tu saldo será agregado una vez que se verifique la transferencia. Te enviaremos un correo de confirmación cuando se procese.'
