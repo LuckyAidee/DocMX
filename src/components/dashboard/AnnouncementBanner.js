@@ -3,7 +3,7 @@ import { Shield, FileText, CreditCard, PenTool, UserCheck, FileCheck, X, AlertCi
 
 export default function AnnouncementBanner() {
   // Estado para controlar qué "cara" mostrar: 'normal' o 'announcement'
-  const [currentView, setCurrentView] = useState('normal');
+  const [currentView, setCurrentView] = useState('announcement');
 
   // ========================================================================
   // SECCIÓN PARA FUTURA INTEGRACIÓN CON BACKEND
@@ -73,7 +73,7 @@ export default function AnnouncementBanner() {
           {/* Mensaje del anuncio */}
           <p className="text-lg md:text-xl text-gray-200 text-center max-w-2xl mb-6">
             {/* TODO: Reemplazar con datos dinámicos del backend */}
-            Aquí aparecerá el mensaje del anuncio proveniente del backend.
+            DOCUMENTOS DE EXTRANJEROS PROXIMAMENTE.
           </p>
 
           {/* Badge del tipo de anuncio */}
