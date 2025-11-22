@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Wallet, MessageSquare, ChevronDown, Lightbulb, AlertTriangle, ThumbsUp, MessageCircle, Send, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLocation } from 'react-router-dom';
 
 export default function TopBar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -16,6 +17,7 @@ export default function TopBar() {
   const [messageText, setMessageText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
+  const location = useLocation();
 
   // Iniciales del usuario
   const getInitials = (name) => {
@@ -37,17 +39,30 @@ export default function TopBar() {
 
   // Funciones para el modal de comentarios
   const openModal = () => {
+    // Calcular ancho del scrollbar antes de ocultarlo
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
     setIsModalOpen(true);
     setIsClosing(false);
+
+    // Prevenir scroll y compensar el ancho del scrollbar
     document.body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
   };
 
   const closeModal = () => {
     setIsClosing(true);
+
     setTimeout(() => {
       setIsModalOpen(false);
       setIsClosing(false);
-      document.body.style.overflow = 'auto';
+
+      // Restaurar scroll y padding
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+
       // Reset form
       setFeedbackType('');
       setComment('');
@@ -127,6 +142,25 @@ export default function TopBar() {
     document.addEventListener('keydown', handleEsc);
     return () => document.removeEventListener('keydown', handleEsc);
   }, [isModalOpen, isClosing]);
+
+  // Cerrar modal al cambiar de página
+  useEffect(() => {
+    if (isModalOpen) {
+      // Cerrar inmediatamente sin animación al navegar
+      setIsModalOpen(false);
+      setIsClosing(false);
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+
+      // Reset form
+      setFeedbackType('');
+      setComment('');
+      setRating('');
+      setEmail('');
+      setCharCount(0);
+      setShowMessage(false);
+    }
+  }, [location.pathname]);
 
   // Logout helper removed because it was unused; call `logout()` directly where needed.
   return (
