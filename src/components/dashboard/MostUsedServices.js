@@ -89,8 +89,9 @@ export default function MostUsedServices() {
           name: cfg.nombre || sid,
           price: cfg.precio || '',
           deliveryTime: cfg.tiempoEntrega || '',
-          backgroundColor: cfg.colorAccent || gradientColors[idx % gradientColors.length],
-          documentType: sid,
+          // Forzar los degradados front-end en "Tus más usados" sin tocar backend
+          backgroundColor: gradientColors[idx % gradientColors.length],
+          documentType: cfg.svgKey || sid,
           serviceId: cfg.id || sid,
         };
       }),

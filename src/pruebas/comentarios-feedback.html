@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal de Comentarios - DocMX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animaciones personalizadas */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .modal-overlay {
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-overlay.closing {
+            animation: fadeOut 0.3s ease-out;
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .modal-content.closing {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        /* Estilo para el textarea */
+        textarea:focus {
+            outline: none;
+        }
+
+        /* Rating stars hover effect */
+        .star-rating input[type="radio"]:checked ~ label {
+            color: #f59e0b;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #fbbf24;
+        }
+
+        /* Smooth transitions */
+        * {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    
+    <!-- Simulación de la TopBar -->
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-4 mb-8">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold text-gray-900">Vista previa de TopBar</h2>
+            
+            <!-- Botón de Comentarios (activador del modal) -->
+            <button 
+                id="feedbackBtn"
+                class="relative p-2.5 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
+                title="Enviar comentarios"
+            >
+                <!-- Ícono MessageSquare -->
+                <svg class="w-5 h-5 text-gray-500 group-hover:text-teal-600 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div 
+        id="feedbackModal"
+        class="hidden fixed inset-0 z-50 overflow-y-auto modal-overlay"
+        aria-labelledby="modal-title" 
+        role="dialog" 
+        aria-modal="true"
+    >
+        <!-- Backdrop -->
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <!-- Centrado vertical trick -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Panel -->
+            <div class="modal-content inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                
+                <!-- Header del Modal -->
+                <div class="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 bg-teal-500/20 rounded-lg">
+                                <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white" id="modal-title">
+                                    Enviar comentarios
+                                </h3>
+                                <p class="text-sm text-gray-300 mt-0.5">
+                                    Tu opinión nos ayuda a mejorar DocMX
+                                </p>
+                            </div>
+                        </div>
+                        <button 
+                            id="closeModal"
+                            class="text-gray-300 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+                        >
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Formulario -->
+                <form id="feedbackForm" class="px-6 py-6">
+                    
+                    <!-- Tipo de comentario -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-900 mb-3">
+                            Tipo de comentario
+                        </label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Sugerencia -->
+                            <label class="relative">
+                                <input type="radio" name="feedbackType" value="suggestion" class="peer sr-only" required />
+                                <div class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-gray-200 cursor-pointer peer-checked:border-teal-500 peer-checked:bg-teal-50 hover:border-teal-300 transition-all">
+                                    <svg class="w-5 h-5 text-gray-400 peer-checked:text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700">Sugerencia</span>
+                                </div>
+                            </label>
+
+                            <!-- Problema -->
+                            <label class="relative">
+                                <input type="radio" name="feedbackType" value="issue" class="peer sr-only" />
+                                <div class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-gray-200 cursor-pointer peer-checked:border-red-500 peer-checked:bg-red-50 hover:border-red-300 transition-all">
+                                    <svg class="w-5 h-5 text-gray-400 peer-checked:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700">Problema</span>
+                                </div>
+                            </label>
+
+                            <!-- Elogio -->
+                            <label class="relative">
+                                <input type="radio" name="feedbackType" value="compliment" class="peer sr-only" />
+                                <div class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-gray-200 cursor-pointer peer-checked:border-green-500 peer-checked:bg-green-50 hover:border-green-300 transition-all">
+                                    <svg class="w-5 h-5 text-gray-400 peer-checked:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700">Elogio</span>
+                                </div>
+                            </label>
+
+                            <!-- Otro -->
+                            <label class="relative">
+                                <input type="radio" name="feedbackType" value="other" class="peer sr-only" />
+                                <div class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-gray-200 cursor-pointer peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:border-purple-300 transition-all">
+                                    <svg class="w-5 h-5 text-gray-400 peer-checked:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700">Otro</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Campo de comentario -->
+                    <div class="mb-6">
+                        <label for="comment" class="block text-sm font-semibold text-gray-900 mb-2">
+                            Tu comentario <span class="text-red-500">*</span>
+                        </label>
+                        <textarea 
+                            id="comment"
+                            name="comment"
+                            rows="5"
+                            required
+                            placeholder="Cuéntanos tu experiencia o sugerencia..."
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-0 resize-none text-gray-900 placeholder-gray-400"
+                        ></textarea>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-gray-500">Mínimo 10 caracteres</span>
+                            <span id="charCount" class="text-xs text-gray-400">0 / 500</span>
+                        </div>
+                    </div>
+
+                    <!-- Rating (opcional) -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-900 mb-3">
+                            ¿Qué tan satisfecho estás? <span class="text-gray-400 text-xs font-normal">(Opcional)</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <div class="star-rating flex flex-row-reverse justify-end gap-1">
+                                <input type="radio" id="star5" name="rating" value="5" class="sr-only" />
+                                <label for="star5" class="cursor-pointer text-gray-300 hover:text-yellow-400 text-3xl">★</label>
+                                
+                                <input type="radio" id="star4" name="rating" value="4" class="sr-only" />
+                                <label for="star4" class="cursor-pointer text-gray-300 hover:text-yellow-400 text-3xl">★</label>
+                                
+                                <input type="radio" id="star3" name="rating" value="3" class="sr-only" />
+                                <label for="star3" class="cursor-pointer text-gray-300 hover:text-yellow-400 text-3xl">★</label>
+                                
+                                <input type="radio" id="star2" name="rating" value="2" class="sr-only" />
+                                <label for="star2" class="cursor-pointer text-gray-300 hover:text-yellow-400 text-3xl">★</label>
+                                
+                                <input type="radio" id="star1" name="rating" value="1" class="sr-only" />
+                                <label for="star1" class="cursor-pointer text-gray-300 hover:text-yellow-400 text-3xl">★</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email de contacto (opcional) -->
+                    <div class="mb-6">
+                        <label for="email" class="block text-sm font-semibold text-gray-900 mb-2">
+                            Email de contacto <span class="text-gray-400 text-xs font-normal">(Opcional, por si necesitamos más información)</span>
+                        </label>
+                        <input 
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="tu@email.com"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-0 text-gray-900 placeholder-gray-400"
+                        />
+                    </div>
+
+                    <!-- Mensaje de éxito/error -->
+                    <div id="feedbackMessage" class="hidden mb-4 px-4 py-3 rounded-xl text-sm"></div>
+
+                    <!-- Botones de acción -->
+                    <div class="flex items-center gap-3">
+                        <button 
+                            type="submit"
+                            id="submitBtn"
+                            class="flex-1 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-teal-500/30"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                            Enviar comentario
+                        </button>
+                        <button 
+                            type="button"
+                            id="cancelBtn"
+                            class="px-6 py-3 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all duration-200"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información sobre el diseño -->
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-4">Características del diseño:</h3>
+        <ul class="space-y-2 text-sm text-gray-700">
+            <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✓</span>
+                <span><strong>Modal overlay:</strong> Se abre al hacer click en el botón de MessageSquare</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✓</span>
+                <span><strong>Categorías de feedback:</strong> Sugerencia, Problema, Elogio y Otro con colores diferentes</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✓</span>
+                <span><strong>Validación:</strong> Campo de comentario requerido con contador de caracteres (min 10, max 500)</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✓</span>
+                <span><strong>Rating opcional:</strong> Sistema de estrellas para calificar satisfacción</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✓</span>
+                <span><strong>Email opcional:</strong> Por si necesitas contactar al usuario para más detalles</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✓</span>
+                <span><strong>Animaciones suaves:</strong> FadeIn para overlay y slideUp para el modal</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✓</span>
+                <span><strong>Colores compatibles:</strong> Usa la paleta teal/cyan y slate de DocMX</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✓</span>
+                <span><strong>Responsive:</strong> Se adapta a diferentes tamaños de pantalla</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const feedbackBtn = document.getElementById('feedbackBtn');
+        const feedbackModal = document.getElementById('feedbackModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const feedbackForm = document.getElementById('feedbackForm');
+        const commentField = document.getElementById('comment');
+        const charCount = document.getElementById('charCount');
+        const feedbackMessage = document.getElementById('feedbackMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Abrir modal
+        feedbackBtn.addEventListener('click', () => {
+            feedbackModal.classList.remove('hidden');
+            feedbackModal.classList.remove('closing');
+            const content = feedbackModal.querySelector('.modal-content');
+            content.classList.remove('closing');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Cerrar modal
+        function closeModalFn() {
+            feedbackModal.classList.add('closing');
+            const content = feedbackModal.querySelector('.modal-content');
+            content.classList.add('closing');
+            
+            setTimeout(() => {
+                feedbackModal.classList.add('hidden');
+                feedbackModal.classList.remove('closing');
+                content.classList.remove('closing');
+                document.body.style.overflow = 'auto';
+                feedbackForm.reset();
+                charCount.textContent = '0 / 500';
+                feedbackMessage.classList.add('hidden');
+            }, 300);
+        }
+
+        closeModal.addEventListener('click', closeModalFn);
+        cancelBtn.addEventListener('click', closeModalFn);
+
+        // Cerrar al hacer click en el backdrop
+        feedbackModal.addEventListener('click', (e) => {
+            if (e.target === feedbackModal || e.target.classList.contains('bg-gray-900')) {
+                closeModalFn();
+            }
+        });
+
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !feedbackModal.classList.contains('hidden')) {
+                closeModalFn();
+            }
+        });
+
+        // Contador de caracteres
+        commentField.addEventListener('input', (e) => {
+            const length = e.target.value.length;
+            charCount.textContent = `${length} / 500`;
+            
+            if (length > 500) {
+                charCount.classList.add('text-red-500');
+                charCount.classList.remove('text-gray-400');
+            } else {
+                charCount.classList.remove('text-red-500');
+                charCount.classList.add('text-gray-400');
+            }
+        });
+
+        // Envío del formulario
+        feedbackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(feedbackForm);
+            const comment = formData.get('comment');
+            const feedbackType = formData.get('feedbackType');
+
+            // Validaciones
+            if (!feedbackType) {
+                showMessage('Por favor selecciona un tipo de comentario', 'error');
+                return;
+            }
+
+            if (comment.length < 10) {
+                showMessage('El comentario debe tener al menos 10 caracteres', 'error');
+                return;
+            }
+
+            if (comment.length > 500) {
+                showMessage('El comentario no puede exceder 500 caracteres', 'error');
+                return;
+            }
+
+            // Simular envío al backend
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Enviando...
+            `;
+
+            // Simular llamada al backend
+            setTimeout(() => {
+                console.log('Datos del formulario:', {
+                    feedbackType: formData.get('feedbackType'),
+                    comment: formData.get('comment'),
+                    rating: formData.get('rating') || 'No especificado',
+                    email: formData.get('email') || 'No proporcionado'
+                });
+
+                showMessage('¡Gracias por tu comentario! Lo revisaremos pronto.', 'success');
+                
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    Enviar comentario
+                `;
+
+                // Cerrar modal después de 2 segundos
+                setTimeout(() => {
+                    closeModalFn();
+                }, 2000);
+            }, 1500);
+        });
+
+        function showMessage(message, type) {
+            feedbackMessage.classList.remove('hidden');
+            feedbackMessage.textContent = message;
+            
+            if (type === 'success') {
+                feedbackMessage.classList.remove('bg-red-50', 'border-red-200', 'text-red-700');
+                feedbackMessage.classList.add('bg-green-50', 'border-green-200', 'text-green-700', 'border-2');
+            } else {
+                feedbackMessage.classList.remove('bg-green-50', 'border-green-200', 'text-green-700');
+                feedbackMessage.classList.add('bg-red-50', 'border-red-200', 'text-red-700', 'border-2');
+            }
+
+            // Auto-ocultar mensaje después de 5 segundos
+            setTimeout(() => {
+                feedbackMessage.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

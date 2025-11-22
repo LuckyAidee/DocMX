@@ -3,7 +3,7 @@ import { Shield, FileText, CreditCard, PenTool, UserCheck, FileCheck, X, AlertCi
 
 export default function AnnouncementBanner() {
   // Estado para controlar qué "cara" mostrar: 'normal' o 'announcement'
-  const [currentView, setCurrentView] = useState('announcement');
+  const [currentView, setCurrentView] = useState('normal');
 
   // ========================================================================
   // SECCIÓN PARA FUTURA INTEGRACIÓN CON BACKEND
@@ -178,7 +178,7 @@ export default function AnnouncementBanner() {
       
       {/* Logo pequeño en esquina */}
       <div className="absolute bottom-4 right-6 text-white text-xs opacity-60 group-hover:opacity-80 transition-opacity duration-300">
-        <span className="font-semibold">DocMX</span> by mamel
+        <span className="font-semibold">DocMX</span> by BunnyCorp
       </div>
       
       {/* Borde inferior elegante */}

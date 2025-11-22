@@ -83,17 +83,17 @@ export default function TopBar() {
         {/* Separador visual sutil */}
         <div className="h-8 w-px bg-gray-200"></div>
 
-        {/* Display de Balance mejorado */}
-        <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-          <div className="p-2 bg-teal-50 rounded-lg">
+        {/* Display de Balance compacto */}
+        <div className="flex items-center gap-2.5 px-3 py-1.5 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-100 shadow-sm hover:shadow transition-all duration-300">
+          <div className="p-1.5 bg-teal-50 rounded-md">
             <Wallet 
               className="w-5 h-5 text-teal-600" 
               strokeWidth={2}
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col leading-tight">
             <span className="text-xs text-gray-500 font-medium">Balance</span>
-            <span className="text-base font-bold text-gray-900">
+            <span className="text-base font-semibold text-gray-900">
               ${user?.balance?.toFixed(2) || '0.00'}
             </span>
           </div>
