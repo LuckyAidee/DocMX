@@ -49,12 +49,13 @@ export default function TopBar() {
     // Prevenir scroll del body
     document.body.style.overflow = 'hidden';
 
-    // Compensar el ancho del scrollbar en body y elementos fixed
+    // Compensar el ancho del scrollbar
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
-      // Compensar también en el header de TopBar
+      // Aplicar padding al header (el header ya tiene px-8 = 2rem)
       if (headerRef.current) {
-        headerRef.current.style.paddingRight = `calc(2rem + ${scrollbarWidth}px)`;
+        const currentPadding = 32; // px-8 = 2rem = 32px
+        headerRef.current.style.paddingRight = `${currentPadding + scrollbarWidth}px`;
       }
     }
   };
@@ -62,28 +63,47 @@ export default function TopBar() {
   const closeModal = () => {
     setIsClosing(true);
 
-    // Usar timeout más corto para que coincida con la animación
-    setTimeout(() => {
-      setIsModalOpen(false);
-      setIsClosing(false);
+    // Esperar a que termine la animación antes de limpiar
+    const modalContent = document.querySelector('.modal-content');
+    if (modalContent) {
+      modalContent.addEventListener('animationend', () => {
+        setIsModalOpen(false);
+        setIsClosing(false);
 
-      // Restaurar scroll y padding
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+        // Restaurar estilos
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
 
-      // Restaurar padding del header
-      if (headerRef.current) {
-        headerRef.current.style.paddingRight = '';
-      }
+        if (headerRef.current) {
+          headerRef.current.style.paddingRight = '';
+        }
 
-      // Reset form
-      setFeedbackType('');
-      setComment('');
-      setRating('');
-      setEmail('');
-      setCharCount(0);
-      setShowMessage(false);
-    }, 200); // Reducido para coincidir con animación fadeOut
+        // Reset form
+        setFeedbackType('');
+        setComment('');
+        setRating('');
+        setEmail('');
+        setCharCount(0);
+        setShowMessage(false);
+      }, { once: true });
+    } else {
+      // Fallback si no encuentra el elemento
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setIsClosing(false);
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        if (headerRef.current) {
+          headerRef.current.style.paddingRight = '';
+        }
+        setFeedbackType('');
+        setComment('');
+        setRating('');
+        setEmail('');
+        setCharCount(0);
+        setShowMessage(false);
+      }, 300);
+    }
   };
 
   const handleCommentChange = (e) => {
@@ -260,7 +280,7 @@ export default function TopBar() {
     {/* Modal de Comentarios */}
     {isModalOpen && (
       <div
-        className={`fixed inset-0 z-50 overflow-y-auto modal-overlay ${isClosing ? 'closing' : ''}`}
+        className={`fixed inset-0 z-50 overflow-y-auto modal-overlay ${!isClosing ? 'active' : ''}`}
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"
@@ -268,7 +288,7 @@ export default function TopBar() {
         {/* Backdrop */}
         <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <div
-            className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"
+            className="fixed inset-0"
             aria-hidden="true"
             onClick={closeModal}
           ></div>
@@ -279,10 +299,16 @@ export default function TopBar() {
           </span>
 
           {/* Modal Panel */}
-          <div className={`modal-content inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full ${isClosing ? 'closing' : ''}`}>
+          <div
+            className={`modal-content inline-block align-bottom bg-white rounded-2xl text-left shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full ${isClosing ? 'closing' : ''}`}
+            style={{ overflow: 'hidden' }}
+          >
 
             {/* Header del Modal */}
-            <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-5 rounded-t-2xl">
+            <div
+              className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-5"
+              style={{ borderTopLeftRadius: '1rem', borderTopRightRadius: '1rem' }}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-teal-500/20 rounded-lg">

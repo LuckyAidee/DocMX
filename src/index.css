@@ -43,20 +43,22 @@
   }
 }
 
-.modal-overlay {
-  animation: fadeIn 0.2s ease-out;
-}
-
-.modal-overlay.closing {
-  animation: fadeOut 0.2s ease-out;
-}
-
+/* Solo animar el contenido del modal, no el overlay */
 .modal-content {
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.25s ease-out forwards;
 }
 
 .modal-content.closing {
-  animation: slideDown 0.2s ease-out;
+  animation: slideDown 0.25s ease-out forwards;
+}
+
+.modal-overlay {
+  background-color: rgba(17, 24, 39, 0);
+  transition: background-color 0.25s ease-out;
+}
+
+.modal-overlay.active {
+  background-color: rgba(17, 24, 39, 0.75);
 }
 
 /* Rating stars hover effect */
