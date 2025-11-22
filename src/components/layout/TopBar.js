@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Wallet, MessageSquare, ChevronDown, Lightbulb, AlertTriangle, ThumbsUp, MessageCircle, Send, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from 'react-router-dom';
@@ -18,6 +18,7 @@ export default function TopBar() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
+  const headerRef = useRef(null);
 
   // Iniciales del usuario
   const getInitials = (name) => {
@@ -45,16 +46,23 @@ export default function TopBar() {
     setIsModalOpen(true);
     setIsClosing(false);
 
-    // Prevenir scroll y compensar el ancho del scrollbar
+    // Prevenir scroll del body
     document.body.style.overflow = 'hidden';
+
+    // Compensar el ancho del scrollbar en body y elementos fixed
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
+      // Compensar también en el header de TopBar
+      if (headerRef.current) {
+        headerRef.current.style.paddingRight = `calc(2rem + ${scrollbarWidth}px)`;
+      }
     }
   };
 
   const closeModal = () => {
     setIsClosing(true);
 
+    // Usar timeout más corto para que coincida con la animación
     setTimeout(() => {
       setIsModalOpen(false);
       setIsClosing(false);
@@ -63,6 +71,11 @@ export default function TopBar() {
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
 
+      // Restaurar padding del header
+      if (headerRef.current) {
+        headerRef.current.style.paddingRight = '';
+      }
+
       // Reset form
       setFeedbackType('');
       setComment('');
@@ -70,7 +83,7 @@ export default function TopBar() {
       setEmail('');
       setCharCount(0);
       setShowMessage(false);
-    }, 300);
+    }, 200); // Reducido para coincidir con animación fadeOut
   };
 
   const handleCommentChange = (e) => {
@@ -152,6 +165,11 @@ export default function TopBar() {
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
 
+      // Restaurar padding del header
+      if (headerRef.current) {
+        headerRef.current.style.paddingRight = '';
+      }
+
       // Reset form
       setFeedbackType('');
       setComment('');
@@ -165,7 +183,7 @@ export default function TopBar() {
   // Logout helper removed because it was unused; call `logout()` directly where needed.
   return (
     <>
-    <header className="bg-white border-b border-gray-100 h-16 flex items-center justify-between px-8 fixed top-0 right-0 left-16 z-40 shadow-sm backdrop-blur-sm bg-white/95">
+    <header ref={headerRef} className="bg-white border-b border-gray-100 h-16 flex items-center justify-between px-8 fixed top-0 right-0 left-16 z-40 shadow-sm backdrop-blur-sm bg-white/95">
       
       {/* Lado Izquierdo - Perfil de Usuario */}
       <div className="flex items-center gap-3">
@@ -264,7 +282,7 @@ export default function TopBar() {
           <div className={`modal-content inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full ${isClosing ? 'closing' : ''}`}>
 
             {/* Header del Modal */}
-            <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-5">
+            <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-5 rounded-t-2xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-teal-500/20 rounded-lg">

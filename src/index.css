@@ -48,7 +48,7 @@
 }
 
 .modal-overlay.closing {
-  animation: fadeOut 0.3s ease-out;
+  animation: fadeOut 0.2s ease-out;
 }
 
 .modal-content {
@@ -56,7 +56,7 @@
 }
 
 .modal-content.closing {
-  animation: slideDown 0.3s ease-out;
+  animation: slideDown 0.2s ease-out;
 }
 
 /* Rating stars hover effect */
@@ -67,4 +67,9 @@
 .star-rating label:hover,
 .star-rating label:hover ~ label {
   color: #fbbf24;
+}
+
+/* Prevenir desplazamiento de elementos fixed cuando se oculta scrollbar */
+body.modal-open {
+  overflow: hidden;
 }
