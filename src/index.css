@@ -76,7 +76,9 @@ body.modal-open {
   overflow: hidden;
 }
 
-/* Compensar scrollbar en elementos fixed */
-body.modal-open header[class*="fixed"] {
+/* Compensar scrollbar en TODOS los elementos fixed */
+body.modal-open .fixed,
+body.modal-open header.fixed,
+body.modal-open [class*="fixed"] {
   padding-right: calc(2rem + var(--scrollbar-width, 0px)) !important;
 }

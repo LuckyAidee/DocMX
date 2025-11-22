@@ -42,6 +42,8 @@ export default function TopBar() {
     // Calcular ancho del scrollbar antes de ocultarlo
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
+    console.log('📏 Ancho del scrollbar:', scrollbarWidth, 'px');
+
     // Establecer variable CSS para el ancho del scrollbar
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
 
