@@ -46,6 +46,12 @@
 /* Solo animar el contenido del modal, no el overlay */
 .modal-content {
   animation: slideUp 0.25s ease-out forwards;
+  /* Forzar aceleración GPU y mejorar rendering durante animación */
+  will-change: transform;
+  transform: translateZ(0);
+  /* Prevenir píxeles blancos en esquinas durante animación */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .modal-content.closing {
@@ -69,6 +75,16 @@
 .star-rating label:hover,
 .star-rating label:hover ~ label {
   color: #fbbf24;
+}
+
+/* Asegurar que el header del modal cubra completamente las esquinas */
+.modal-content > div:first-child {
+  /* Forzar que el header cubra completamente las esquinas superiores */
+  position: relative;
+  z-index: 1;
+  /* Eliminar cualquier gap entre el borde y el contenido */
+  margin: 0;
+  transform: translateZ(0);
 }
 
 /* Prevenir desplazamiento cuando se oculta scrollbar */
