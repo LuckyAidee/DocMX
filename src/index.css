@@ -71,7 +71,12 @@
   color: #fbbf24;
 }
 
-/* Prevenir desplazamiento de elementos fixed cuando se oculta scrollbar */
+/* Prevenir desplazamiento cuando se oculta scrollbar */
 body.modal-open {
   overflow: hidden;
+}
+
+/* Compensar scrollbar en elementos fixed */
+body.modal-open header[class*="fixed"] {
+  padding-right: calc(2rem + var(--scrollbar-width, 0px)) !important;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Wallet, MessageSquare, ChevronDown, Lightbulb, AlertTriangle, ThumbsUp, MessageCircle, Send, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from 'react-router-dom';
@@ -18,7 +18,6 @@ export default function TopBar() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
-  const headerRef = useRef(null);
 
   // Iniciales del usuario
   const getInitials = (name) => {
@@ -43,21 +42,19 @@ export default function TopBar() {
     // Calcular ancho del scrollbar antes de ocultarlo
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
-    setIsModalOpen(true);
-    setIsClosing(false);
+    // Establecer variable CSS para el ancho del scrollbar
+    document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
 
-    // Prevenir scroll del body
-    document.body.style.overflow = 'hidden';
+    // Agregar clase al body para aplicar estilos
+    document.body.classList.add('modal-open');
 
-    // Compensar el ancho del scrollbar
+    // Compensar scrollbar en el body
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
-      // Aplicar padding al header (el header ya tiene px-8 = 2rem)
-      if (headerRef.current) {
-        const currentPadding = 32; // px-8 = 2rem = 32px
-        headerRef.current.style.paddingRight = `${currentPadding + scrollbarWidth}px`;
-      }
     }
+
+    setIsModalOpen(true);
+    setIsClosing(false);
   };
 
   const closeModal = () => {
@@ -71,12 +68,9 @@ export default function TopBar() {
         setIsClosing(false);
 
         // Restaurar estilos
-        document.body.style.overflow = '';
+        document.body.classList.remove('modal-open');
         document.body.style.paddingRight = '';
-
-        if (headerRef.current) {
-          headerRef.current.style.paddingRight = '';
-        }
+        document.documentElement.style.removeProperty('--scrollbar-width');
 
         // Reset form
         setFeedbackType('');
@@ -91,11 +85,9 @@ export default function TopBar() {
       setTimeout(() => {
         setIsModalOpen(false);
         setIsClosing(false);
-        document.body.style.overflow = '';
+        document.body.classList.remove('modal-open');
         document.body.style.paddingRight = '';
-        if (headerRef.current) {
-          headerRef.current.style.paddingRight = '';
-        }
+        document.documentElement.style.removeProperty('--scrollbar-width');
         setFeedbackType('');
         setComment('');
         setRating('');
@@ -182,13 +174,11 @@ export default function TopBar() {
       // Cerrar inmediatamente sin animación al navegar
       setIsModalOpen(false);
       setIsClosing(false);
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
 
-      // Restaurar padding del header
-      if (headerRef.current) {
-        headerRef.current.style.paddingRight = '';
-      }
+      // Restaurar estilos
+      document.body.classList.remove('modal-open');
+      document.body.style.paddingRight = '';
+      document.documentElement.style.removeProperty('--scrollbar-width');
 
       // Reset form
       setFeedbackType('');
@@ -204,7 +194,7 @@ export default function TopBar() {
   // Logout helper removed because it was unused; call `logout()` directly where needed.
   return (
     <>
-    <header ref={headerRef} className="bg-white border-b border-gray-100 h-16 flex items-center justify-between px-8 fixed top-0 right-0 left-16 z-40 shadow-sm backdrop-blur-sm bg-white/95">
+    <header className="bg-white border-b border-gray-100 h-16 flex items-center justify-between px-8 fixed top-0 right-0 left-16 z-40 shadow-sm backdrop-blur-sm bg-white/95">
       
       {/* Lado Izquierdo - Perfil de Usuario */}
       <div className="flex items-center gap-3">
@@ -301,15 +291,11 @@ export default function TopBar() {
 
           {/* Modal Panel */}
           <div
-            className={`modal-content inline-block align-bottom bg-white rounded-2xl text-left shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full ${isClosing ? 'closing' : ''}`}
-            style={{ overflow: 'hidden' }}
+            className={`modal-content inline-block align-bottom bg-white rounded-2xl text-left shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full overflow-hidden ${isClosing ? 'closing' : ''}`}
           >
 
             {/* Header del Modal */}
-            <div
-              className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-5"
-              style={{ borderTopLeftRadius: '1rem', borderTopRightRadius: '1rem' }}
-            >
+            <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-5 rounded-t-2xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-teal-500/20 rounded-lg">
