@@ -198,7 +198,8 @@ export default function TopBar() {
       setCharCount(0);
       setShowMessage(false);
     }
-  }, [location.pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]); // Solo queremos ejecutar cuando cambia la ruta, no cuando cambia isModalOpen
 
   // Logout helper removed because it was unused; call `logout()` directly where needed.
   return (
